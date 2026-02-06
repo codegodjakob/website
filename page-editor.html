@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Seiteninhalt bearbeiten</title>
+    <link rel="stylesheet" href="page-editor.css" />
+  </head>
+  <body>
+    <main class="panel">
+      <header class="panel-header">
+        <div>
+          <h1>Seiteninhalt bearbeiten</h1>
+          <p>Baue deine Seite aus flexiblen Sections und ordne sie frei an.</p>
+        </div>
+        <div class="panel-actions">
+          <a class="ghost" href="admin.html">Zurück zur Admin</a>
+          <a id="open-page" class="ghost" href="#" target="_blank">Seite öffnen</a>
+          <button id="save-btn" type="button">Speichern</button>
+        </div>
+      </header>
+
+      <section class="form">
+        <label>
+          Titel
+          <input id="field-title" type="text" placeholder="Titel der Seite" />
+        </label>
+
+        <label>
+          Kategorie
+          <input id="field-category" type="text" placeholder="Category" list="category-options" />
+          <datalist id="category-options"></datalist>
+        </label>
+      </section>
+
+      <section class="sections">
+        <div class="sections-header">
+          <div>
+            <h2>Sections</h2>
+            <p>Baue die Seite aus unterschiedlichen Inhaltsblöcken und ordne sie frei an.</p>
+          </div>
+          <div class="sections-actions">
+            <select id="add-section-type">
+              <option value="text">Text (volle Breite)</option>
+              <option value="split-text-media">Text links / Media rechts</option>
+              <option value="split-media-text">Media links / Text rechts</option>
+              <option value="media-full">Media (volle Breite)</option>
+              <option value="media-grid">Media Grid</option>
+              <option value="media-duo">Doppelbild nebeneinander</option>
+              <option value="media-bleed">Full-Bleed Media</option>
+            </select>
+            <button id="add-section" type="button">Section hinzufügen</button>
+          </div>
+        </div>
+        <div id="section-list" class="section-list"></div>
+      </section>
+
+      <footer class="panel-footer">
+        <span id="status-text">Bereit</span>
+      </footer>
+    </main>
+
+    <script src="page-editor.js"></script>
+  </body>
+</html>

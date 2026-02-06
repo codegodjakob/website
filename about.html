@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>About</title>
+    <link rel="stylesheet" href="about.css" />
+  </head>
+  <body data-theme="light">
+    <header class="top-bar">
+      <div class="top-left">
+        <button id="menu-toggle" type="button" aria-expanded="false" aria-controls="menu">Jakob Schlenker</button>
+        <div id="menu" class="menu-bubble" role="menu">
+          <a href="about.html" role="menuitem">About</a>
+          <a href="#" role="menuitem" data-email>Email</a>
+          <a href="#" role="menuitem" data-social="spotify" target="_blank" rel="noreferrer">Spotify</a>
+          <a href="#" role="menuitem" data-social="linkedin" target="_blank" rel="noreferrer">LinkedIn</a>
+        </div>
+      </div>
+      <div class="top-right">
+        <a id="back-button" class="pill-button" href="index.html">Back</a>
+        <button id="theme-toggle" type="button" aria-label="Theme umschalten">
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="4.5" />
+            <path d="M12 2v2.5M12 19.5V22M4.5 12H2M22 12h-2.5M5.4 5.4l1.8 1.8M16.8 16.8l1.8 1.8M18.6 5.4l-1.8 1.8M7.2 16.8l-1.8 1.8" />
+          </svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 14.5A9 9 0 0 1 9.5 3a7.5 7.5 0 1 0 11.5 11.5Z" />
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <main class="coming-soon">
+      <p>Coming soon</p>
+    </main>
+
+    <script src="about.js"></script>
+  </body>
+</html>
