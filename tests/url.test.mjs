@@ -1,4 +1,7 @@
-const { describe, it, expect } = require("vitest");
+import { createRequire } from "node:module";
+import { describe, it, expect } from "vitest";
+
+const require = createRequire(import.meta.url);
 const { normalizeUrl, isValidUrl, toEmbedUrl } = require("../shared/url.js");
 
 describe("shared/url", () => {

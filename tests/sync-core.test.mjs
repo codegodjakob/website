@@ -1,4 +1,7 @@
-const { describe, it, expect } = require("vitest");
+import { createRequire } from "node:module";
+import { describe, it, expect } from "vitest";
+
+const require = createRequire(import.meta.url);
 const syncCore = require("../shared/sync-core.js");
 const constants = require("../shared/constants.js");
 

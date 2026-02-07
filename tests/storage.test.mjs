@@ -1,4 +1,7 @@
-const { describe, it, expect } = require("vitest");
+import { createRequire } from "node:module";
+import { describe, it, expect } from "vitest";
+
+const require = createRequire(import.meta.url);
 const storageUtils = require("../shared/storage.js");
 const constants = require("../shared/constants.js");
 
@@ -30,7 +33,7 @@ describe("shared/storage", () => {
   });
 
   it("resolves categories from modern and legacy fields", () => {
-    expect(storageUtils.resolveItemCategories({ categories: ["Case Study", "Case Study", " " ] })).toEqual([
+    expect(storageUtils.resolveItemCategories({ categories: ["Case Study", "Case Study", " "] })).toEqual([
       "Case Study"
     ]);
     expect(storageUtils.resolveItemCategories({ category: "Editorial" })).toEqual(["Editorial"]);
