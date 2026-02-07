@@ -39,6 +39,15 @@ body {
   background-repeat: no-repeat;
 }
 
+body.page-loading .page {
+  opacity: 0;
+}
+
+body.page-ready .page {
+  opacity: 1;
+  transition: opacity 0.18s ease;
+}
+
 .top-bar {
   position: absolute;
   top: var(--edge-offset);
@@ -218,6 +227,10 @@ body[data-theme="dark"] #theme-toggle .icon-moon {
 .intro h1 {
   margin: 8px 0 12px;
   font-size: 36px;
+}
+
+.intro h1:empty {
+  display: none;
 }
 
 .lead {

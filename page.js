@@ -34,7 +34,17 @@ const relatedList = document.getElementById("related-list");
 const emailLinks = document.querySelectorAll("[data-email]");
 const socialLinks = document.querySelectorAll("[data-social]");
 
-const initialTheme = "light";
+function readInitialTheme() {
+  const fallback = "light";
+  try {
+    const raw = (localStorage.getItem(STORAGE_KEY) || "").trim();
+    return THEMES.includes(raw) ? raw : fallback;
+  } catch (error) {
+    return fallback;
+  }
+}
+
+const initialTheme = readInitialTheme();
 document.body.setAttribute("data-theme", initialTheme);
 
 themeToggle.addEventListener("click", () => {
@@ -397,7 +407,7 @@ function renderPage() {
   const page = (id && pages[id]) || {};
   const hasSections = Array.isArray(page.sections) && page.sections.length;
 
-  const title = bubble?.title || page.title || "Titel des Artikels";
+  const title = bubble?.title || page.title || "";
   const hero = page.hero || bubble?.image || "";
   const bubbleCategories = Array.isArray(bubble?.categories) ? bubble.categories.filter(Boolean) : [];
   const legacyCategory = typeof bubble?.category === "string" ? bubble.category.trim() : "";
@@ -410,9 +420,9 @@ function renderPage() {
   const pageCategory =
     rawPageCategory && rawPageCategory.toLowerCase() !== "category" ? [rawPageCategory] : [];
   const categories = bubbleCategoryList.length ? bubbleCategoryList : pageCategory;
-  const body = page.body || "## Abschnittsüberschrift\n\nDieser Text ist ein Platzhalter.\n\n> Kurzes Zitat oder Highlight.\n\n## Weiterer Abschnitt\n\nMehr Details, Beispiele oder Kontext.";
+  const body = page.body || "";
 
-  document.title = title;
+  document.title = title ? `${title} | Jakob Schlenker` : "Jakob Schlenker";
   pageTitle.textContent = title;
   if (metaCategories) {
     metaCategories.innerHTML = "";
@@ -450,14 +460,19 @@ function renderPage() {
 }
 
 async function bootstrapPage() {
-  if (window.SiteStateSync) {
-    const pulled = await window.SiteStateSync.pull();
-    if (pulled?.ok && pulled.changed) {
-      applySocialLinks();
-      applyEmailLinks();
+  try {
+    if (window.SiteStateSync) {
+      const pulled = await window.SiteStateSync.pull();
+      if (pulled?.ok && pulled.changed) {
+        applySocialLinks();
+        applyEmailLinks();
+      }
     }
+    renderPage();
+  } finally {
+    document.body.classList.remove("page-loading");
+    document.body.classList.add("page-ready");
   }
-  renderPage();
 }
 
 void bootstrapPage();
