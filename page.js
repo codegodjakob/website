@@ -482,7 +482,18 @@ function renderPage() {
   renderRelated(id, bubbles, pages, categories);
 }
 
-renderPage();
+async function bootstrapPage() {
+  if (window.SiteStateSync) {
+    const pulled = await window.SiteStateSync.pull();
+    if (pulled?.ok && pulled.changed) {
+      applySocialLinks();
+      applyEmailLinks();
+    }
+  }
+  renderPage();
+}
+
+void bootstrapPage();
 
 window.addEventListener("storage", (event) => {
   if (event.key === SOCIAL_KEY) {

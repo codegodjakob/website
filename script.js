@@ -1596,6 +1596,14 @@ window.addEventListener("resize", () => {
   syncOnResize();
 });
 
-updateBounds();
-buildBubbles();
-requestAnimationFrame(updateBubbles);
+async function bootstrap() {
+  if (window.SiteStateSync) {
+    await window.SiteStateSync.pull();
+  }
+  bubbleData = loadBubbleData();
+  updateBounds();
+  buildBubbles();
+  requestAnimationFrame(updateBubbles);
+}
+
+void bootstrap();

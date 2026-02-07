@@ -140,6 +140,12 @@ body.is-sorting {
   color: #ffffff;
 }
 
+.panel-actions #connect-live.is-connected {
+  border-color: rgba(44, 122, 63, 0.4);
+  color: #2c7a3f;
+  background: #f4fbf5;
+}
+
 .panel-actions #reset-btn {
   border-color: rgba(200, 40, 40, 0.4);
   color: var(--danger);

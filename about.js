@@ -129,3 +129,24 @@ function applySocialLinks() {
 
 applyEmailLinks();
 applySocialLinks();
+
+window.addEventListener("storage", (event) => {
+  if (event.key === CONTACT_KEY) {
+    applyEmailLinks();
+  }
+  if (event.key === SOCIAL_KEY) {
+    applySocialLinks();
+  }
+});
+
+async function bootstrapAbout() {
+  if (window.SiteStateSync) {
+    const pulled = await window.SiteStateSync.pull();
+    if (pulled?.ok && pulled.changed) {
+      applyEmailLinks();
+      applySocialLinks();
+    }
+  }
+}
+
+void bootstrapAbout();

@@ -30,6 +30,7 @@ const defaultBubbleData = [
 
 const listEl = document.getElementById("item-list");
 const addBtn = document.getElementById("add-btn");
+const connectLiveBtn = document.getElementById("connect-live");
 const openSiteBtn = document.getElementById("open-site");
 const statusText = document.getElementById("status-text");
 const saveBtn = document.getElementById("save-btn");
@@ -71,6 +72,8 @@ let contactData = loadContact();
 let socialData = loadSocial();
 let isDirty = false;
 let saveTimer = null;
+let remoteSyncInFlight = false;
+const SYNC_STATE_KEYS = new Set([STORAGE_KEY, VISIBILITY_KEY, CATEGORY_KEY, ABOUT_KEY, CONTACT_KEY, SOCIAL_KEY]);
 
 function defaultItems() {
   return defaultBubbleData.map((item) => {
@@ -125,6 +128,33 @@ function saveVisibilityMap() {
   } catch (error) {
     console.warn("Visibility map konnte nicht gespeichert werden", error);
   }
+}
+
+function refreshLocalStateFromStorage() {
+  visibilityMap = loadVisibilityMap();
+  items = loadData();
+  categories = loadCategories();
+  aboutData = loadAbout();
+  contactData = loadContact();
+  socialData = loadSocial();
+}
+
+function renderAllPanels() {
+  render();
+  renderCategories();
+  renderAbout();
+  renderContact();
+  renderSocial();
+  updateSocialHint(spotifyInput, spotifyHint);
+  updateSocialHint(linkedinInput, linkedinHint);
+}
+
+function updateLiveButtonState() {
+  if (!connectLiveBtn) return;
+  const token = window.SiteStateSync?.getAdminToken?.() || "";
+  const connected = Boolean(token);
+  connectLiveBtn.textContent = connected ? "Live verbunden" : "Live verbinden";
+  connectLiveBtn.classList.toggle("is-connected", connected);
 }
 
 function startSort(row, event) {
@@ -184,9 +214,8 @@ window.addEventListener("pointerup", endSort);
 window.addEventListener("pointercancel", endSort);
 
 window.addEventListener("storage", (event) => {
-  if (event.key === STORAGE_KEY) {
-    refreshFromStorage();
-  }
+  if (!event.key || !SYNC_STATE_KEYS.has(event.key)) return;
+  refreshFromStorage();
 });
 
 function loadData() {
@@ -242,9 +271,8 @@ function saveData() {
 
 function refreshFromStorage() {
   if (isDirty) return;
-  visibilityMap = loadVisibilityMap();
-  items = loadData();
-  render();
+  refreshLocalStateFromStorage();
+  renderAllPanels();
 }
 
 function loadAbout() {
@@ -349,6 +377,7 @@ function commitSave() {
   saveContact();
   saveSocial();
   markSaved();
+  void pushRemoteState();
 }
 
 function requestSave() {
@@ -357,6 +386,42 @@ function requestSave() {
   saveTimer = setTimeout(() => {
     commitSave();
   }, 600);
+}
+
+async function pullRemoteState() {
+  if (!window.SiteStateSync) return { ok: false, skipped: true };
+  const result = await window.SiteStateSync.pull();
+  if (result?.ok && result.changed) {
+    refreshLocalStateFromStorage();
+    renderAllPanels();
+    markSaved();
+  }
+  return result;
+}
+
+async function pushRemoteState(options = {}) {
+  if (!window.SiteStateSync || remoteSyncInFlight) return { ok: false, skipped: true };
+
+  let token = window.SiteStateSync.getAdminToken();
+  if (!token && options.promptForToken) {
+    token = window.prompt("Admin Sync Token eingeben:");
+    token = window.SiteStateSync.setAdminToken(token);
+  }
+  updateLiveButtonState();
+  if (!token) return { ok: false, skipped: true };
+
+  remoteSyncInFlight = true;
+  try {
+    const state = window.SiteStateSync.collectLocalState();
+    const result = await window.SiteStateSync.push(state, token);
+    if (!result?.ok) {
+      console.warn("Live-Sync fehlgeschlagen", result?.error || result);
+      return result;
+    }
+    return result;
+  } finally {
+    remoteSyncInFlight = false;
+  }
 }
 
 function renderAbout() {
@@ -718,16 +783,33 @@ addBtn.addEventListener("click", () => {
   requestSave();
 });
 
-render();
-renderCategories();
-renderAbout();
-renderContact();
-renderSocial();
-commitSave();
-
 if (openSiteBtn) {
   openSiteBtn.addEventListener("click", () => {
     window.location.href = "index.html";
+  });
+}
+
+if (connectLiveBtn) {
+  connectLiveBtn.addEventListener("click", async () => {
+    if (!window.SiteStateSync) {
+      alert("Live-Sync ist nicht verfügbar.");
+      return;
+    }
+    const current = window.SiteStateSync.getAdminToken();
+    const entered = window.prompt("Admin Sync Token eingeben:", current || "");
+    if (entered === null) return;
+    const token = window.SiteStateSync.setAdminToken(entered);
+    updateLiveButtonState();
+    if (!token) return;
+
+    const pullResult = await pullRemoteState();
+    if (!pullResult?.ok) {
+      console.warn("Remote-Stand konnte nicht geladen werden", pullResult?.error || pullResult);
+    }
+    await pushRemoteState();
+    refreshLocalStateFromStorage();
+    renderAllPanels();
+    markSaved();
   });
 }
 
@@ -1042,3 +1124,15 @@ cropApply.addEventListener("click", () => {
   render();
   closeCropper();
 });
+
+async function bootstrapAdmin() {
+  updateLiveButtonState();
+  const pulled = await pullRemoteState();
+  if (!pulled?.ok || !pulled?.changed) {
+    refreshLocalStateFromStorage();
+    renderAllPanels();
+    markSaved();
+  }
+}
+
+void bootstrapAdmin();

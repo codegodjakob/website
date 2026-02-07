@@ -18,6 +18,32 @@ let isDirty = false;
 let saveTimer = null;
 let sections = [];
 let dragState = null;
+let remoteSyncInFlight = false;
+
+async function pullRemoteState() {
+  if (!window.SiteStateSync) return;
+  await window.SiteStateSync.pull();
+}
+
+async function pushRemoteState() {
+  if (!window.SiteStateSync || remoteSyncInFlight) return;
+  let token = window.SiteStateSync.getAdminToken();
+  if (!token) {
+    token = window.prompt("Admin Sync Token für Live-Speicherung eingeben:");
+    token = window.SiteStateSync.setAdminToken(token);
+  }
+  if (!token) return;
+
+  remoteSyncInFlight = true;
+  try {
+    const result = await window.SiteStateSync.push(window.SiteStateSync.collectLocalState(), token);
+    if (!result?.ok) {
+      console.warn("Live-Sync fehlgeschlagen", result?.error || result);
+    }
+  } finally {
+    remoteSyncInFlight = false;
+  }
+}
 
 function loadBubbles() {
   try {
@@ -144,6 +170,7 @@ function commitSave() {
   };
   savePages(pages);
   markSaved();
+  void pushRemoteState();
 }
 
 function loadCategories() {
@@ -538,4 +565,9 @@ if (addSectionBtn) {
   });
 }
 
-init();
+async function bootstrap() {
+  await pullRemoteState();
+  init();
+}
+
+void bootstrap();
