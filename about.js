@@ -24,8 +24,7 @@ const menuBubble = document.getElementById("menu");
 const emailLinks = document.querySelectorAll("[data-email]");
 const socialLinks = document.querySelectorAll("[data-social]");
 
-const storedTheme = localStorage.getItem(THEME_KEY);
-const initialTheme = storedTheme === "dark" ? "dark" : "light";
+const initialTheme = "light";
 document.body.setAttribute("data-theme", initialTheme);
 
 if (themeToggle) {

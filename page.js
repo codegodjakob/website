@@ -34,8 +34,7 @@ const relatedList = document.getElementById("related-list");
 const emailLinks = document.querySelectorAll("[data-email]");
 const socialLinks = document.querySelectorAll("[data-social]");
 
-const storedTheme = localStorage.getItem(STORAGE_KEY);
-const initialTheme = storedTheme === "dark" ? "dark" : "light";
+const initialTheme = "light";
 document.body.setAttribute("data-theme", initialTheme);
 
 themeToggle.addEventListener("click", () => {

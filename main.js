@@ -175,9 +175,7 @@ const measureCanvas = document.createElement("canvas");
 const measureCtx = measureCanvas.getContext("2d");
 const FONT_STACK = '"SF Pro Text", "SF Pro Display", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif';
 
-const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-const storedTheme = localStorage.getItem(THEME_KEY);
-const initialTheme = THEMES.includes(storedTheme) ? storedTheme : (prefersDark ? "dark" : "light");
+const initialTheme = "light";
 const themeController =
   typeof sunsetTheme.createThemeController === "function"
     ? sunsetTheme.createThemeController({
