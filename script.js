@@ -31,6 +31,17 @@ const defaultBubbleData = [
   { title: "Interface Poetry", url: "https://example.com/interface-poetry" }
 ];
 
+function coerceEnabled(value) {
+  if (value === false || value === 0 || value == null) return false;
+  if (typeof value === "string") {
+    const normalized = value.trim().toLowerCase();
+    if (normalized === "false" || normalized === "0" || normalized === "off" || normalized === "no") {
+      return false;
+    }
+  }
+  return true;
+}
+
 function loadBubbleData() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
@@ -55,11 +66,11 @@ function loadBubbleData() {
         const image = typeof item.image === "string" && item.image.trim().length ? item.image.trim() : null;
         const imageOnly = Boolean(image && !title);
         const id = typeof item.id === "string" && item.id.trim().length ? item.id.trim() : crypto.randomUUID();
-        const enabled = item?.enabled !== false;
+        const enabled = coerceEnabled(item?.enabled);
         const base = image ? { id, title, url, image, enabled } : { id, title, url, enabled };
         return imageOnly ? { ...base, imageOnly: true } : base;
       })
-      .filter((item) => item.enabled !== false);
+      .filter((item) => coerceEnabled(item?.enabled));
     return cleaned.length ? cleaned : hasCustomData ? [] : defaultBubbleData.map((item) => ({ ...item, enabled: true }));
   } catch (error) {
     return defaultBubbleData.map((item) => ({ ...item, enabled: true }));

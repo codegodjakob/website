@@ -84,8 +84,19 @@ function defaultItems() {
   });
 }
 
+function coerceEnabled(value) {
+  if (value === false || value === 0 || value == null) return false;
+  if (typeof value === "string") {
+    const normalized = value.trim().toLowerCase();
+    if (normalized === "false" || normalized === "0" || normalized === "off" || normalized === "no") {
+      return false;
+    }
+  }
+  return true;
+}
+
 function isItemEnabled(item) {
-  return item?.enabled !== false;
+  return coerceEnabled(item?.enabled);
 }
 
 function startSort(row, event) {
@@ -170,7 +181,7 @@ function loadData() {
         title: item?.title ?? "",
         url: `page.html?id=${id}`,
         image: item?.image ?? "",
-        enabled: item?.enabled !== false,
+        enabled: coerceEnabled(item?.enabled),
         imageOnly: Boolean(item?.image && !String(item?.title || "").trim()),
         categories: categories.filter(Boolean)
       };
@@ -184,10 +195,10 @@ function saveData() {
   items.forEach((item) => {
     if (!item.id) item.id = crypto.randomUUID();
     item.url = `page.html?id=${item.id}`;
-    item.enabled = item.enabled !== false;
+    item.enabled = coerceEnabled(item.enabled);
   });
   localStorage.setItem(STORAGE_KEY, JSON.stringify(items, null, 2));
-  const activeCount = items.filter((item) => item.enabled !== false).length;
+  const activeCount = items.filter((item) => isItemEnabled(item)).length;
   countText.textContent = `${items.length} Einträge (${activeCount} sichtbar)`;
 }
 
@@ -647,7 +658,7 @@ function render() {
     listEl.appendChild(row);
   });
 
-  const activeCount = items.filter((item) => item.enabled !== false).length;
+  const activeCount = items.filter((item) => isItemEnabled(item)).length;
   countText.textContent = `${items.length} Einträge (${activeCount} sichtbar)`;
 }
 

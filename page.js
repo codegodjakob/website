@@ -149,13 +149,24 @@ function getQueryParam(name) {
   return new URLSearchParams(window.location.search).get(name);
 }
 
+function coerceEnabled(value) {
+  if (value === false || value === 0 || value == null) return false;
+  if (typeof value === "string") {
+    const normalized = value.trim().toLowerCase();
+    if (normalized === "false" || normalized === "0" || normalized === "off" || normalized === "no") {
+      return false;
+    }
+  }
+  return true;
+}
+
 function loadBubbleList() {
   try {
     const raw = localStorage.getItem(DATA_KEY);
     if (!raw) return [];
     const parsed = JSON.parse(raw);
     if (!Array.isArray(parsed)) return [];
-    return parsed.filter((item) => item && item.enabled !== false);
+    return parsed.filter((item) => item && coerceEnabled(item.enabled));
   } catch (error) {
     return [];
   }
