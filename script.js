@@ -33,7 +33,8 @@ const defaultBubbleData = [
 ];
 
 function coerceEnabled(value) {
-  if (value === false || value === 0 || value == null) return false;
+  if (value === false || value === 0 || value === null) return false;
+  if (typeof value === "undefined") return true;
   if (typeof value === "string") {
     const normalized = value.trim().toLowerCase();
     if (normalized === "false" || normalized === "0" || normalized === "off" || normalized === "no") {
@@ -58,7 +59,9 @@ function loadVisibilityMap() {
 function loadBubbleData() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
+    const visibilityRaw = localStorage.getItem(VISIBILITY_KEY);
     lastDataSnapshot = raw || "";
+    lastVisibilitySnapshot = visibilityRaw || "";
     if (!raw) {
       return defaultBubbleData.map((item) => ({ ...item, enabled: true }));
     }
@@ -103,6 +106,7 @@ try {
 }
 
 let lastDataSnapshot = "";
+let lastVisibilitySnapshot = "";
 let bubbleData = loadBubbleData();
 
 const activeTitles = new Set();
@@ -353,8 +357,10 @@ applyEmailLinks();
 function refreshBubbleData() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY) || "";
-    if (raw === lastDataSnapshot) return;
+    const visibilityRaw = localStorage.getItem(VISIBILITY_KEY) || "";
+    if (raw === lastDataSnapshot && visibilityRaw === lastVisibilitySnapshot) return;
     lastDataSnapshot = raw;
+    lastVisibilitySnapshot = visibilityRaw;
   } catch (error) {
     return;
   }
@@ -376,7 +382,7 @@ function refreshBubbleData() {
 }
 
 window.addEventListener("storage", (event) => {
-  if (event.key === STORAGE_KEY) {
+  if (event.key === STORAGE_KEY || event.key === VISIBILITY_KEY) {
     refreshBubbleData();
   }
   if (event.key === SOCIAL_KEY) {

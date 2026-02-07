@@ -87,7 +87,8 @@ function defaultItems() {
 }
 
 function coerceEnabled(value) {
-  if (value === false || value === 0 || value == null) return false;
+  if (value === false || value === 0 || value === null) return false;
+  if (typeof value === "undefined") return true;
   if (typeof value === "string") {
     const normalized = value.trim().toLowerCase();
     if (normalized === "false" || normalized === "0" || normalized === "off" || normalized === "no") {
