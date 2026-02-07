@@ -2,6 +2,7 @@ const THEMES = ["light", "dark"];
 const STORAGE_KEY = "bubble-theme";
 const DATA_KEY = "bubble-data";
 const PAGE_KEY = "bubble-pages";
+const VISIBILITY_KEY = "bubble-visibility";
 const CONTACT_KEY = "site-contact";
 const SOCIAL_KEY = "site-social";
 
@@ -160,13 +161,33 @@ function coerceEnabled(value) {
   return true;
 }
 
+function loadVisibilityMap() {
+  try {
+    const raw = localStorage.getItem(VISIBILITY_KEY);
+    if (!raw) return {};
+    const parsed = JSON.parse(raw);
+    return parsed && typeof parsed === "object" ? parsed : {};
+  } catch (error) {
+    return {};
+  }
+}
+
 function loadBubbleList() {
   try {
     const raw = localStorage.getItem(DATA_KEY);
     if (!raw) return [];
     const parsed = JSON.parse(raw);
     if (!Array.isArray(parsed)) return [];
-    return parsed.filter((item) => item && coerceEnabled(item.enabled));
+    const visibilityMap = loadVisibilityMap();
+    return parsed.filter((item) => {
+      if (!item) return false;
+      const id = typeof item.id === "string" ? item.id : "";
+      const fromItem = coerceEnabled(item.enabled);
+      const fromMap = id && Object.prototype.hasOwnProperty.call(visibilityMap, id)
+        ? coerceEnabled(visibilityMap[id])
+        : undefined;
+      return fromMap === undefined ? fromItem : fromMap;
+    });
   } catch (error) {
     return [];
   }

@@ -1,4 +1,5 @@
 const STORAGE_KEY = "bubble-data";
+const VISIBILITY_KEY = "bubble-visibility";
 const CONTACT_KEY = "site-contact";
 const SOCIAL_KEY = "site-social";
 
@@ -42,6 +43,18 @@ function coerceEnabled(value) {
   return true;
 }
 
+function loadVisibilityMap() {
+  try {
+    const raw = localStorage.getItem(VISIBILITY_KEY);
+    if (!raw) return {};
+    const parsed = JSON.parse(raw);
+    if (!parsed || typeof parsed !== "object") return {};
+    return parsed;
+  } catch (error) {
+    return {};
+  }
+}
+
 function loadBubbleData() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
@@ -53,6 +66,7 @@ function loadBubbleData() {
     if (!Array.isArray(parsed) || parsed.length === 0) {
       return defaultBubbleData.map((item) => ({ ...item, enabled: true }));
     }
+    const visibilityMap = loadVisibilityMap();
     const cleaned = parsed
       .filter((item) => {
         if (!item) return false;
@@ -66,7 +80,11 @@ function loadBubbleData() {
         const image = typeof item.image === "string" && item.image.trim().length ? item.image.trim() : null;
         const imageOnly = Boolean(image && !title);
         const id = typeof item.id === "string" && item.id.trim().length ? item.id.trim() : crypto.randomUUID();
-        const enabled = coerceEnabled(item?.enabled);
+        const fromItem = coerceEnabled(item?.enabled);
+        const fromMap = Object.prototype.hasOwnProperty.call(visibilityMap, id)
+          ? coerceEnabled(visibilityMap[id])
+          : undefined;
+        const enabled = fromMap === undefined ? fromItem : fromMap;
         const base = image ? { id, title, url, image, enabled } : { id, title, url, enabled };
         return imageOnly ? { ...base, imageOnly: true } : base;
       })

@@ -1,4 +1,5 @@
 const STORAGE_KEY = "bubble-data";
+const VISIBILITY_KEY = "bubble-visibility";
 const CATEGORY_KEY = "bubble-categories";
 const ABOUT_KEY = "site-about";
 const CONTACT_KEY = "site-contact";
@@ -59,6 +60,7 @@ const checkLinkedinBtn = document.getElementById("check-linkedin");
 const spotifyHint = document.getElementById("spotify-hint");
 const linkedinHint = document.getElementById("linkedin-hint");
 
+let visibilityMap = loadVisibilityMap();
 let items = loadData();
 let dragState = null;
 let uploadInFlight = false;
@@ -97,6 +99,31 @@ function coerceEnabled(value) {
 
 function isItemEnabled(item) {
   return coerceEnabled(item?.enabled);
+}
+
+function loadVisibilityMap() {
+  try {
+    const raw = localStorage.getItem(VISIBILITY_KEY);
+    if (!raw) return {};
+    const parsed = JSON.parse(raw);
+    if (!parsed || typeof parsed !== "object") return {};
+    const next = {};
+    Object.entries(parsed).forEach(([id, enabled]) => {
+      if (!id) return;
+      next[id] = coerceEnabled(enabled);
+    });
+    return next;
+  } catch (error) {
+    return {};
+  }
+}
+
+function saveVisibilityMap() {
+  try {
+    localStorage.setItem(VISIBILITY_KEY, JSON.stringify(visibilityMap, null, 2));
+  } catch (error) {
+    console.warn("Visibility map konnte nicht gespeichert werden", error);
+  }
 }
 
 function startSort(row, event) {
@@ -176,12 +203,16 @@ function loadData() {
         : item?.category
           ? [item.category]
           : [];
+      const fromItem = coerceEnabled(item?.enabled);
+      const fromMap = Object.prototype.hasOwnProperty.call(visibilityMap, id)
+        ? coerceEnabled(visibilityMap[id])
+        : undefined;
       return {
         id,
         title: item?.title ?? "",
         url: `page.html?id=${id}`,
         image: item?.image ?? "",
-        enabled: coerceEnabled(item?.enabled),
+        enabled: fromMap === undefined ? fromItem : fromMap,
         imageOnly: Boolean(item?.image && !String(item?.title || "").trim()),
         categories: categories.filter(Boolean)
       };
@@ -197,13 +228,20 @@ function saveData() {
     item.url = `page.html?id=${item.id}`;
     item.enabled = coerceEnabled(item.enabled);
   });
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(items, null, 2));
+  visibilityMap = Object.fromEntries(items.map((item) => [item.id, isItemEnabled(item)]));
+  saveVisibilityMap();
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(items, null, 2));
+  } catch (error) {
+    console.warn("bubble-data konnte nicht gespeichert werden", error);
+  }
   const activeCount = items.filter((item) => isItemEnabled(item)).length;
   countText.textContent = `${items.length} Einträge (${activeCount} sichtbar)`;
 }
 
 function refreshFromStorage() {
   if (isDirty) return;
+  visibilityMap = loadVisibilityMap();
   items = loadData();
   render();
 }
@@ -626,6 +664,8 @@ function render() {
       items[index].enabled = visibilityInput.checked;
       row.classList.toggle("is-disabled", !visibilityInput.checked);
       updateVisibilityLabel();
+      visibilityMap[items[index].id] = visibilityInput.checked;
+      saveVisibilityMap();
       commitSave();
     });
     visibilityLabel.append(visibilityInput, visibilityText);
