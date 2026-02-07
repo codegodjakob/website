@@ -35,6 +35,14 @@
         </div>
       </header>
 
+      <section id="sync-health" class="sync-health" aria-live="polite">
+        <span id="sync-health-state" class="health-pill is-neutral">Live-Sync: Unbekannt</span>
+        <span id="sync-health-pull" class="health-pill">Letzter Pull: -</span>
+        <span id="sync-health-push" class="health-pill">Letzter Push: -</span>
+        <span id="sync-health-endpoint" class="health-pill">API: /api/site-state</span>
+        <p id="sync-health-error" class="health-error" hidden></p>
+      </section>
+
       <details class="admin-panel category-panel">
         <summary>
           <div class="panel-summary">

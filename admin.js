@@ -75,6 +75,11 @@ const checkSpotifyBtn = document.getElementById("check-spotify");
 const checkLinkedinBtn = document.getElementById("check-linkedin");
 const spotifyHint = document.getElementById("spotify-hint");
 const linkedinHint = document.getElementById("linkedin-hint");
+const syncHealthState = document.getElementById("sync-health-state");
+const syncHealthPull = document.getElementById("sync-health-pull");
+const syncHealthPush = document.getElementById("sync-health-push");
+const syncHealthEndpoint = document.getElementById("sync-health-endpoint");
+const syncHealthError = document.getElementById("sync-health-error");
 
 let visibilityMap = loadVisibilityMap();
 let items = loadData();
@@ -88,6 +93,8 @@ let socialData = loadSocial();
 let isDirty = false;
 let saveTimer = null;
 let remoteSyncInFlight = false;
+let lastPullAt = null;
+let lastPushAt = null;
 const SYNC_STATE_KEYS = new Set([STORAGE_KEY, VISIBILITY_KEY, CATEGORY_KEY, ABOUT_KEY, CONTACT_KEY, SOCIAL_KEY]);
 
 function defaultItems() {
@@ -160,6 +167,80 @@ function updateLiveButtonState() {
   const connected = Boolean(token);
   connectLiveBtn.textContent = connected ? "Live verbunden" : "Live verbinden";
   connectLiveBtn.classList.toggle("is-connected", connected);
+}
+
+function formatSyncTime(value) {
+  if (!value) return "-";
+  const date = typeof value === "number" ? new Date(value) : new Date(String(value));
+  if (Number.isNaN(date.getTime())) return "-";
+  return date.toLocaleTimeString("de-DE", {
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit"
+  });
+}
+
+function setHealthPillState(el, state, label) {
+  if (!el) return;
+  el.classList.remove("is-ok", "is-warn", "is-error", "is-neutral");
+  el.classList.add(state || "is-neutral");
+  el.textContent = label;
+}
+
+function showSyncError(message) {
+  if (!syncHealthError) return;
+  const text = String(message || "").trim();
+  syncHealthError.textContent = text;
+  syncHealthError.hidden = !text;
+}
+
+function describeSyncError(result, fallback) {
+  if (!result) return fallback || "Unbekannter Sync-Fehler.";
+  if (result.status === 401) return "Token ungültig oder nicht gesetzt.";
+  if (result.status === 500) return "Serverkonfiguration fehlt (Env/Token).";
+  if (result.status) return `Serverfehler (HTTP ${result.status}).`;
+  return result?.error?.message || fallback || "Unbekannter Sync-Fehler.";
+}
+
+function setSyncHealth(options = {}) {
+  const {
+    stateLabel,
+    stateClass = "is-neutral",
+    pullAt = lastPullAt,
+    pushAt = lastPushAt,
+    error = ""
+  } = options;
+
+  if (typeof pullAt !== "undefined") {
+    lastPullAt = pullAt || lastPullAt;
+  }
+  if (typeof pushAt !== "undefined") {
+    lastPushAt = pushAt || lastPushAt;
+  }
+
+  if (syncHealthEndpoint) {
+    const endpoint = window.SiteStateSync?.endpoint || "/api/site-state";
+    syncHealthEndpoint.textContent = `API: ${endpoint}`;
+  }
+
+  setHealthPillState(syncHealthState, stateClass, stateLabel || "Live-Sync: Unbekannt");
+  if (syncHealthPull) {
+    syncHealthPull.textContent = `Letzter Pull: ${formatSyncTime(lastPullAt)}`;
+  }
+  if (syncHealthPush) {
+    syncHealthPush.textContent = `Letzter Push: ${formatSyncTime(lastPushAt)}`;
+  }
+  showSyncError(error);
+}
+
+function scheduleHealthProbe() {
+  if (!window.SiteStateSync) return;
+  setInterval(async () => {
+    if (isDirty || remoteSyncInFlight) return;
+    const token = window.SiteStateSync.getAdminToken();
+    if (!token) return;
+    await pullRemoteState();
+  }, 45000);
 }
 
 function startSort(row, event) {
@@ -356,7 +437,12 @@ function setDirty() {
   if (isDirty) return;
   isDirty = true;
   if (saveBtn) saveBtn.style.display = "inline-flex";
-  if (statusText) statusText.style.display = "none";
+  if (statusText) {
+    statusText.style.display = "inline-flex";
+    statusText.classList.remove("is-error");
+    statusText.classList.add("is-dirty");
+    statusText.textContent = "Nicht gespeichert";
+  }
 }
 
 function markSaved() {
@@ -364,8 +450,17 @@ function markSaved() {
   if (saveBtn) saveBtn.style.display = "none";
   if (statusText) {
     statusText.style.display = "inline-flex";
+    statusText.classList.remove("is-error", "is-dirty");
     statusText.textContent = "Gespeichert";
   }
+}
+
+function markSaveError(message) {
+  if (!statusText) return;
+  statusText.style.display = "inline-flex";
+  statusText.classList.remove("is-dirty");
+  statusText.classList.add("is-error");
+  statusText.textContent = message || "Sync-Fehler";
 }
 
 function commitSave() {
@@ -391,13 +486,36 @@ function requestSave() {
 }
 
 async function pullRemoteState() {
-  if (!window.SiteStateSync) return { ok: false, skipped: true };
-  const result = await window.SiteStateSync.pull();
-  if (result?.ok && result.changed) {
-    refreshLocalStateFromStorage();
-    renderAllPanels();
-    markSaved();
+  if (!window.SiteStateSync) {
+    setSyncHealth({
+      stateLabel: "Live-Sync: Deaktiviert",
+      stateClass: "is-warn",
+      error: "SiteStateSync ist nicht verfügbar."
+    });
+    return { ok: false, skipped: true };
   }
+  const result = await window.SiteStateSync.pull();
+  if (result?.ok) {
+    if (result.changed) {
+      refreshLocalStateFromStorage();
+      renderAllPanels();
+      markSaved();
+    }
+    setSyncHealth({
+      stateLabel: "Live-Sync: Verbunden",
+      stateClass: "is-ok",
+      pullAt: result.updatedAt || Date.now(),
+      error: ""
+    });
+    return result;
+  }
+  const message = describeSyncError(result, "Pull fehlgeschlagen.");
+  setSyncHealth({
+    stateLabel: "Live-Sync: Fehler",
+    stateClass: "is-error",
+    error: message
+  });
+  markSaveError("Pull fehlgeschlagen");
   return result;
 }
 
@@ -410,16 +528,36 @@ async function pushRemoteState(options = {}) {
     token = window.SiteStateSync.setAdminToken(token);
   }
   updateLiveButtonState();
-  if (!token) return { ok: false, skipped: true };
+  if (!token) {
+    setSyncHealth({
+      stateLabel: "Live-Sync: Token fehlt",
+      stateClass: "is-warn",
+      error: "Kein Admin Token hinterlegt."
+    });
+    return { ok: false, skipped: true };
+  }
 
   remoteSyncInFlight = true;
   try {
     const state = window.SiteStateSync.collectLocalState();
     const result = await window.SiteStateSync.push(state, token);
     if (!result?.ok) {
+      const message = describeSyncError(result, "Push fehlgeschlagen.");
       console.warn("Live-Sync fehlgeschlagen", result?.error || result);
+      setSyncHealth({
+        stateLabel: "Live-Sync: Fehler",
+        stateClass: "is-error",
+        error: message
+      });
+      markSaveError("Push fehlgeschlagen");
       return result;
     }
+    setSyncHealth({
+      stateLabel: "Live-Sync: Verbunden",
+      stateClass: "is-ok",
+      pushAt: result.updatedAt || Date.now(),
+      error: ""
+    });
     return result;
   } finally {
     remoteSyncInFlight = false;
@@ -795,6 +933,11 @@ if (connectLiveBtn) {
   connectLiveBtn.addEventListener("click", async () => {
     if (!window.SiteStateSync) {
       alert("Live-Sync ist nicht verfügbar.");
+      setSyncHealth({
+        stateLabel: "Live-Sync: Deaktiviert",
+        stateClass: "is-warn",
+        error: "SiteStateSync ist nicht verfügbar."
+      });
       return;
     }
     const current = window.SiteStateSync.getAdminToken();
@@ -802,13 +945,26 @@ if (connectLiveBtn) {
     if (entered === null) return;
     const token = window.SiteStateSync.setAdminToken(entered);
     updateLiveButtonState();
-    if (!token) return;
+    if (!token) {
+      setSyncHealth({
+        stateLabel: "Live-Sync: Token fehlt",
+        stateClass: "is-warn",
+        error: "Bitte Admin Token eingeben."
+      });
+      return;
+    }
 
     const pullResult = await pullRemoteState();
     if (!pullResult?.ok) {
       console.warn("Remote-Stand konnte nicht geladen werden", pullResult?.error || pullResult);
+      alert(describeSyncError(pullResult, "Remote-Stand konnte nicht geladen werden."));
+      return;
     }
-    await pushRemoteState();
+    const pushResult = await pushRemoteState();
+    if (!pushResult?.ok) {
+      alert(describeSyncError(pushResult, "Remote-Stand konnte nicht gespeichert werden."));
+      return;
+    }
     refreshLocalStateFromStorage();
     renderAllPanels();
     markSaved();
@@ -1114,12 +1270,25 @@ cropApply.addEventListener("click", () => {
 
 async function bootstrapAdmin() {
   updateLiveButtonState();
+  setSyncHealth({
+    stateLabel: "Live-Sync: Prüfe Verbindung",
+    stateClass: "is-neutral",
+    error: ""
+  });
   const pulled = await pullRemoteState();
   if (!pulled?.ok || !pulled?.changed) {
     refreshLocalStateFromStorage();
     renderAllPanels();
     markSaved();
   }
+  if (!window.SiteStateSync?.getAdminToken?.()) {
+    setSyncHealth({
+      stateLabel: "Live-Sync: Nicht verbunden",
+      stateClass: "is-warn",
+      error: "Verbinde mit Admin Token für Live-Sync."
+    });
+  }
+  scheduleHealthProbe();
 }
 
 void bootstrapAdmin();
