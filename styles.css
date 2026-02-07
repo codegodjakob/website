@@ -49,38 +49,30 @@ body[data-theme="sunset"] {
       rgba(255, 252, 248, 0.6) 0%,
       rgba(255, 233, 228, 0.42) 18%,
       rgba(244, 204, 198, 0.28) 36%,
-      rgba(224, 176, 182, 0.2) 52%,
-      rgba(150, 150, 170, 0.08) 68%,
-      rgba(20, 24, 36, 0.05) 82%
+      rgba(188, 178, 190, 0.18) 52%,
+      rgba(116, 140, 176, 0.1) 68%,
+      rgba(14, 26, 44, 0.06) 82%
     ),
     linear-gradient(
       0deg,
-      #2b1e22 0%,
-      #3a2528 4%,
-      #46302b 8%,
-      #52352d 12%,
-      #5e3a2e 16%,
-      #6a4030 20%,
-      #764633 24%,
-      #824c36 28%,
-      #8f533a 32%,
-      #9c5a40 36%,
-      #aa6248 40%,
-      #b86b52 44%,
-      #c5755d 48%,
-      #d07f69 52%,
-      #db8976 56%,
-      #e39484 60%,
-      #eca092 64%,
-      #efaa9f 68%,
-      #f2b4ac 72%,
-      #f0c6c4 76%,
-      #f1e0e6 80%,
-      #cab7c0 84%,
-      #a28c9f 88%,
-      #675b82 92%,
-      #32294a 96%,
-      #120a24 100%
+      #02050b 0%,
+      #040a13 6%,
+      #07101d 12%,
+      #0b1828 18%,
+      #14233a 24%,
+      #1f2d47 30%,
+      #2b3850 36%,
+      #3a4756 42%,
+      #4a565d 48%,
+      #5d6563 54%,
+      #736d63 60%,
+      #8a745f 66%,
+      #a27a5f 72%,
+      #bb8465 78%,
+      #d69574 84%,
+      #ecb189 90%,
+      #f6d4ad 95%,
+      #fff0d4 100%
     );
   --bg-rgb: 216, 150, 120;
   --text: #f2e3d7;
@@ -119,8 +111,8 @@ body {
 }
 
 body[data-theme="sunset"] {
-  background-color: #120a24;
-  background: #120a24;
+  background-color: #02050b;
+  background: #02050b;
 }
 
 #app {
@@ -207,10 +199,10 @@ body.sunset-enter #sunset-layer .sunset-gradient {
   inset: 0;
   background: linear-gradient(
     0deg,
-    rgba(16, 10, 30, 0.95) 0%,
-    rgba(20, 12, 34, 0.9) 40%,
-    rgba(26, 16, 42, 0.75) 70%,
-    rgba(34, 22, 52, 0.6) 100%
+    rgba(2, 6, 14, 0.96) 0%,
+    rgba(5, 10, 20, 0.92) 40%,
+    rgba(10, 18, 30, 0.78) 70%,
+    rgba(18, 28, 44, 0.62) 100%
   );
   opacity: 0;
   pointer-events: none;
@@ -570,31 +562,31 @@ body[data-theme="sunset"] .bubble.has-image img {
 
 @keyframes sunsetShift {
   0% {
-    filter: brightness(1.16) saturate(1.02) hue-rotate(-4deg);
+    filter: brightness(1.16) saturate(1.02) hue-rotate(-1deg);
     background-position: 50% 100%;
   }
   22% {
-    filter: brightness(1.12) saturate(1.01) hue-rotate(-3deg);
+    filter: brightness(1.12) saturate(1.01) hue-rotate(-0.5deg);
     background-position: 46% 70%;
   }
   42% {
-    filter: brightness(0.82) saturate(0.94) hue-rotate(-5deg);
+    filter: brightness(0.82) saturate(0.94) hue-rotate(-1.2deg);
     background-position: 54% 56%;
   }
   58% {
-    filter: brightness(0.52) saturate(0.88) hue-rotate(-7deg);
+    filter: brightness(0.52) saturate(0.88) hue-rotate(-1.8deg);
     background-position: 56% 44%;
   }
   74% {
-    filter: brightness(0.5) saturate(0.87) hue-rotate(-8deg);
+    filter: brightness(0.5) saturate(0.87) hue-rotate(-2deg);
     background-position: 52% 38%;
   }
   90% {
-    filter: brightness(0.92) saturate(0.95) hue-rotate(-5deg);
+    filter: brightness(0.92) saturate(0.95) hue-rotate(-1.2deg);
     background-position: 49% 64%;
   }
   100% {
-    filter: brightness(1.16) saturate(1.02) hue-rotate(-4deg);
+    filter: brightness(1.16) saturate(1.02) hue-rotate(-1deg);
     background-position: 50% 100%;
   }
 }
@@ -632,12 +624,16 @@ body[data-theme="sunset"] .bubble.has-image img {
 
 @keyframes sunsetRise {
   0% {
-    transform: translate(-50%, -50%) translateY(40vh);
-    opacity: 0;
+    transform: translate(-50%, -50%) translateY(18vh);
+    opacity: 0.24;
   }
-  40% {
+  16% {
+    transform: translate(-50%, -50%) translateY(8vh);
+    opacity: 0.58;
+  }
+  38% {
     transform: translate(-50%, -50%) translateY(6vh);
-    opacity: 0.55;
+    opacity: 0.7;
   }
   100% {
     transform: translate(-50%, -50%) translateY(-24vh);
@@ -647,23 +643,23 @@ body[data-theme="sunset"] .bubble.has-image img {
 
 @keyframes sunsetShiftRise {
   0% {
-    filter: brightness(0.44) saturate(0.84) hue-rotate(-8deg);
+    filter: brightness(0.66) saturate(0.9) hue-rotate(-1.8deg);
     background-position: 52% 36%;
   }
-  24% {
-    filter: brightness(0.5) saturate(0.86) hue-rotate(-8deg);
-    background-position: 53% 39%;
+  20% {
+    filter: brightness(0.9) saturate(0.95) hue-rotate(-1.4deg);
+    background-position: 53% 44%;
   }
   42% {
-    filter: brightness(0.84) saturate(0.93) hue-rotate(-6deg);
-    background-position: 50% 56%;
+    filter: brightness(1.02) saturate(0.97) hue-rotate(-1.2deg);
+    background-position: 50% 62%;
   }
   66% {
-    filter: brightness(1.08) saturate(0.98) hue-rotate(-5deg);
+    filter: brightness(1.08) saturate(0.98) hue-rotate(-1deg);
     background-position: 48% 74%;
   }
   100% {
-    filter: brightness(1.16) saturate(1.02) hue-rotate(-4deg);
+    filter: brightness(1.16) saturate(1.02) hue-rotate(-1deg);
     background-position: 50% 100%;
   }
 }
@@ -714,11 +710,11 @@ body[data-theme="sunset"] .bubble.has-image img {
   0% {
     opacity: 0.96;
   }
-  22% {
-    opacity: 0.92;
+  18% {
+    opacity: 0.76;
   }
-  44% {
-    opacity: 0.56;
+  36% {
+    opacity: 0.52;
   }
   68% {
     opacity: 0.2;
