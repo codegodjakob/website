@@ -307,11 +307,9 @@ window.addEventListener("storage", (event) => {
 function loadData() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) {
-      return defaultItems();
-    }
+    if (!raw) return [];
     const parsed = JSON.parse(raw);
-    if (!Array.isArray(parsed)) return defaultItems();
+    if (!Array.isArray(parsed)) return [];
     return parsed.map((item) => {
       const id = item?.id ?? crypto.randomUUID();
       const categories = Array.isArray(item?.categories)
@@ -334,7 +332,7 @@ function loadData() {
       };
     });
   } catch (error) {
-    return defaultItems();
+    return [];
   }
 }
 

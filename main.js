@@ -71,13 +71,9 @@ function loadBubbleData() {
     const visibilityRaw = localStorage.getItem(VISIBILITY_KEY);
     lastDataSnapshot = raw || "";
     lastVisibilitySnapshot = visibilityRaw || "";
-    if (!raw) {
-      return defaultBubbleData.map((item) => ({ ...item, enabled: true }));
-    }
+    if (!raw) return [];
     const parsed = JSON.parse(raw);
-    if (!Array.isArray(parsed) || parsed.length === 0) {
-      return defaultBubbleData.map((item) => ({ ...item, enabled: true }));
-    }
+    if (!Array.isArray(parsed) || parsed.length === 0) return [];
     const visibilityMap = loadVisibilityMap();
     const cleaned = parsed
       .filter((item) => {
@@ -101,17 +97,10 @@ function loadBubbleData() {
         return imageOnly ? { ...base, imageOnly: true } : base;
       })
       .filter((item) => coerceEnabled(item?.enabled));
-    return cleaned.length ? cleaned : hasCustomData ? [] : defaultBubbleData.map((item) => ({ ...item, enabled: true }));
+    return cleaned;
   } catch (error) {
-    return defaultBubbleData.map((item) => ({ ...item, enabled: true }));
+    return [];
   }
-}
-
-let hasCustomData = false;
-try {
-  hasCustomData = Boolean(localStorage.getItem(STORAGE_KEY));
-} catch (error) {
-  hasCustomData = false;
 }
 
 let lastDataSnapshot = "";
@@ -348,9 +337,11 @@ function refreshBubbleData() {
   }
 
   try {
-    hasCustomData = Boolean(localStorage.getItem(STORAGE_KEY));
+    if (!localStorage.getItem(STORAGE_KEY)) {
+      bubbleData = [];
+    }
   } catch (error) {
-    hasCustomData = false;
+    bubbleData = [];
   }
 
   bubbleData = loadBubbleData();
@@ -414,11 +405,7 @@ function nextImageUrl() {
 }
 
 function shouldAssignImage() {
-  if (hasCustomData) return false;
-  const imageCount = state.bubbles.filter((bubble) => bubble.image).length;
-  if (imageCount < 2) return true;
-  if (imageCount >= 3) return false;
-  return Math.random() < 0.35;
+  return false;
 }
 
 function generateUniqueTitle() {
@@ -499,12 +486,8 @@ function getContentKey(item) {
 }
 
 function getNextBubbleData() {
-  if (!bubbleData.length) {
-    return hasCustomData ? null : generateUniqueData();
-  }
-  if (bubbleData.length && activeKeys.size >= bubbleData.length) {
-    return null;
-  }
+  if (!bubbleData.length) return null;
+  if (activeKeys.size >= bubbleData.length) return null;
   if (!dataQueue.length) {
     dataQueue = shuffle([...bubbleData]);
   }
@@ -525,7 +508,7 @@ function getNextBubbleData() {
     safety -= 1;
   }
 
-  if (!item) return hasCustomData ? null : generateUniqueData();
+  if (!item) return null;
 
   const nextItem = { ...item };
   if (!nextItem.image && shouldAssignImage()) {
