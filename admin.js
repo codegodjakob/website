@@ -1,9 +1,24 @@
-const STORAGE_KEY = "bubble-data";
-const VISIBILITY_KEY = "bubble-visibility";
-const CATEGORY_KEY = "bubble-categories";
-const ABOUT_KEY = "site-about";
-const CONTACT_KEY = "site-contact";
-const SOCIAL_KEY = "site-social";
+const shared = window.SiteShared || {};
+const constants = shared.constants || {};
+const storageUtils = shared.storage || {};
+const urlUtils = shared.url || {};
+
+if (typeof storageUtils.migrateState === "function") {
+  storageUtils.migrateState(localStorage, constants);
+}
+
+const STORAGE_KEY = constants.STORAGE_KEYS?.DATA || "bubble-data";
+const VISIBILITY_KEY = constants.STORAGE_KEYS?.VISIBILITY || "bubble-visibility";
+const CATEGORY_KEY = constants.STORAGE_KEYS?.CATEGORIES || "bubble-categories";
+const ABOUT_KEY = constants.STORAGE_KEYS?.ABOUT || "site-about";
+const CONTACT_KEY = constants.STORAGE_KEYS?.CONTACT || "site-contact";
+const SOCIAL_KEY = constants.STORAGE_KEYS?.SOCIAL || "site-social";
+const DEFAULT_SOCIAL = constants.DEFAULT_SOCIAL || {
+  spotify: "https://open.spotify.com/user/jakobschlenker?si=03ac03535b8045d7",
+  linkedin: "https://www.linkedin.com/in/jakob-schlenker-88169526b"
+};
+const normalizeUrl = urlUtils.normalizeUrl || ((value) => value || "");
+const isValidUrl = urlUtils.isValidUrl || (() => false);
 
 const defaultBubbleData = [
   { title: "Die Zukunft der stillen Interfaces", url: "https://example.com/future-interfaces" },
@@ -89,17 +104,7 @@ function defaultItems() {
   });
 }
 
-function coerceEnabled(value) {
-  if (value === false || value === 0 || value === null) return false;
-  if (typeof value === "undefined") return true;
-  if (typeof value === "string") {
-    const normalized = value.trim().toLowerCase();
-    if (normalized === "false" || normalized === "0" || normalized === "off" || normalized === "no") {
-      return false;
-    }
-  }
-  return true;
-}
+const coerceEnabled = storageUtils.coerceEnabled || ((value) => value !== false);
 
 function isItemEnabled(item) {
   return coerceEnabled(item?.enabled);
@@ -330,10 +335,7 @@ function loadSocial() {
   try {
     const raw = localStorage.getItem(SOCIAL_KEY);
     if (!raw) {
-      return {
-        spotify: "https://open.spotify.com/user/jakobschlenker?si=03ac03535b8045d7",
-        linkedin: "https://www.linkedin.com/in/jakob-schlenker-88169526b"
-      };
+      return { ...DEFAULT_SOCIAL };
     }
     const parsed = JSON.parse(raw);
     if (!parsed || typeof parsed !== "object") return {};
@@ -884,21 +886,6 @@ if (linkedinInput) {
     socialData.linkedin = event.target.value.trim();
     requestSave();
   });
-}
-
-function normalizeUrl(url) {
-  if (!url) return "";
-  if (/^https?:\/\//i.test(url)) return url;
-  return `https://${url}`;
-}
-
-function isValidUrl(url) {
-  try {
-    const parsed = new URL(url);
-    return Boolean(parsed.protocol && parsed.host);
-  } catch (error) {
-    return false;
-  }
 }
 
 function updateSocialHint(inputEl, hintEl) {

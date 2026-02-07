@@ -1,10 +1,27 @@
-const THEMES = ["light", "dark"];
-const STORAGE_KEY = "bubble-theme";
-const DATA_KEY = "bubble-data";
-const PAGE_KEY = "bubble-pages";
-const VISIBILITY_KEY = "bubble-visibility";
-const CONTACT_KEY = "site-contact";
-const SOCIAL_KEY = "site-social";
+const shared = window.SiteShared || {};
+const constants = shared.constants || {};
+const storageUtils = shared.storage || {};
+const urlUtils = shared.url || {};
+
+if (typeof storageUtils.migrateState === "function") {
+  storageUtils.migrateState(localStorage, constants);
+}
+
+const THEMES = constants.THEMES?.BASIC || ["light", "dark"];
+const STORAGE_KEY = constants.STORAGE_KEYS?.THEME || "bubble-theme";
+const DATA_KEY = constants.STORAGE_KEYS?.DATA || "bubble-data";
+const PAGE_KEY = constants.STORAGE_KEYS?.PAGES || "bubble-pages";
+const VISIBILITY_KEY = constants.STORAGE_KEYS?.VISIBILITY || "bubble-visibility";
+const CONTACT_KEY = constants.STORAGE_KEYS?.CONTACT || "site-contact";
+const SOCIAL_KEY = constants.STORAGE_KEYS?.SOCIAL || "site-social";
+const DEFAULT_SOCIAL = constants.DEFAULT_SOCIAL || {
+  spotify: "https://open.spotify.com/user/jakobschlenker?si=03ac03535b8045d7",
+  linkedin: "https://www.linkedin.com/in/jakob-schlenker-88169526b"
+};
+const normalizeUrl = urlUtils.normalizeUrl || ((value) => value || "");
+const isValidUrl = urlUtils.isValidUrl || (() => false);
+const toEmbedUrl = urlUtils.toEmbedUrl || ((value) => value || "");
+const coerceEnabled = storageUtils.coerceEnabled || ((value) => value !== false);
 
 const themeToggle = document.getElementById("theme-toggle");
 const heroImage = document.getElementById("hero-image");
@@ -57,10 +74,7 @@ function loadSocial() {
   try {
     const raw = localStorage.getItem(SOCIAL_KEY);
     if (!raw) {
-      return {
-        spotify: "https://open.spotify.com/user/jakobschlenker?si=03ac03535b8045d7",
-        linkedin: "https://www.linkedin.com/in/jakob-schlenker-88169526b"
-      };
+      return { ...DEFAULT_SOCIAL };
     }
     const parsed = JSON.parse(raw);
     if (!parsed || typeof parsed !== "object") return {};
@@ -70,21 +84,6 @@ function loadSocial() {
     };
   } catch (error) {
     return {};
-  }
-}
-
-function normalizeUrl(url) {
-  if (!url) return "";
-  if (/^https?:\/\//i.test(url)) return url;
-  return `https://${url}`;
-}
-
-function isValidUrl(url) {
-  try {
-    const parsed = new URL(url);
-    return Boolean(parsed.protocol && parsed.host);
-  } catch (error) {
-    return false;
   }
 }
 
@@ -150,18 +149,6 @@ function getQueryParam(name) {
   return new URLSearchParams(window.location.search).get(name);
 }
 
-function coerceEnabled(value) {
-  if (value === false || value === 0 || value === null) return false;
-  if (typeof value === "undefined") return true;
-  if (typeof value === "string") {
-    const normalized = value.trim().toLowerCase();
-    if (normalized === "false" || normalized === "0" || normalized === "off" || normalized === "no") {
-      return false;
-    }
-  }
-  return true;
-}
-
 function loadVisibilityMap() {
   try {
     const raw = localStorage.getItem(VISIBILITY_KEY);
@@ -207,25 +194,6 @@ function getBubbleCategories(item) {
 
 function isVideoUrl(url) {
   return /\.(mp4|webm|ogg)(\?.*)?$/i.test(url || "");
-}
-
-function toEmbedUrl(url) {
-  if (!url) return "";
-  const trimmed = url.trim();
-  if (trimmed.includes("youtube.com") || trimmed.includes("youtu.be")) {
-    const match =
-      /v=([^&]+)/.exec(trimmed) ||
-      /youtu\.be\/([^?&]+)/.exec(trimmed) ||
-      /embed\/([^?&]+)/.exec(trimmed);
-    const id = match ? match[1] : "";
-    return id ? `https://www.youtube.com/embed/${id}` : trimmed;
-  }
-  if (trimmed.includes("vimeo.com")) {
-    const match = /vimeo\.com\/(\d+)/.exec(trimmed) || /player\.vimeo\.com\/video\/(\d+)/.exec(trimmed);
-    const id = match ? match[1] : "";
-    return id ? `https://player.vimeo.com/video/${id}` : trimmed;
-  }
-  return trimmed;
 }
 
 function renderTextContent(container, text) {

@@ -1,6 +1,16 @@
-const DATA_KEY = "bubble-data";
-const PAGE_KEY = "bubble-pages";
-const CATEGORY_KEY = "bubble-categories";
+const shared = window.SiteShared || {};
+const constants = shared.constants || {};
+const storageUtils = shared.storage || {};
+const urlUtils = shared.url || {};
+
+if (typeof storageUtils.migrateState === "function") {
+  storageUtils.migrateState(localStorage, constants);
+}
+
+const DATA_KEY = constants.STORAGE_KEYS?.DATA || "bubble-data";
+const PAGE_KEY = constants.STORAGE_KEYS?.PAGES || "bubble-pages";
+const CATEGORY_KEY = constants.STORAGE_KEYS?.CATEGORIES || "bubble-categories";
+const toEmbedUrl = urlUtils.toEmbedUrl || ((value) => value || "");
 
 const titleField = document.getElementById("field-title");
 const categoryField = document.getElementById("field-category");
@@ -71,25 +81,6 @@ function saveBubbles(bubbles) {
 
 function savePages(pages) {
   localStorage.setItem(PAGE_KEY, JSON.stringify(pages, null, 2));
-}
-
-function toEmbedUrl(url) {
-  if (!url) return "";
-  const trimmed = url.trim();
-  if (trimmed.includes("youtube.com") || trimmed.includes("youtu.be")) {
-    const match =
-      /v=([^&]+)/.exec(trimmed) ||
-      /youtu\.be\/([^?&]+)/.exec(trimmed) ||
-      /embed\/([^?&]+)/.exec(trimmed);
-    const id = match ? match[1] : "";
-    return id ? `https://www.youtube.com/embed/${id}` : trimmed;
-  }
-  if (trimmed.includes("vimeo.com")) {
-    const match = /vimeo\.com\/(\d+)/.exec(trimmed) || /player\.vimeo\.com\/video\/(\d+)/.exec(trimmed);
-    const id = match ? match[1] : "";
-    return id ? `https://player.vimeo.com/video/${id}` : trimmed;
-  }
-  return trimmed;
 }
 
 function slugifyFileName(name) {

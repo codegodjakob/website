@@ -1,7 +1,22 @@
-const THEMES = ["light", "dark"];
-const THEME_KEY = "bubble-theme";
-const CONTACT_KEY = "site-contact";
-const SOCIAL_KEY = "site-social";
+const shared = window.SiteShared || {};
+const constants = shared.constants || {};
+const storageUtils = shared.storage || {};
+const urlUtils = shared.url || {};
+
+if (typeof storageUtils.migrateState === "function") {
+  storageUtils.migrateState(localStorage, constants);
+}
+
+const THEMES = constants.THEMES?.BASIC || ["light", "dark"];
+const THEME_KEY = constants.STORAGE_KEYS?.THEME || "bubble-theme";
+const CONTACT_KEY = constants.STORAGE_KEYS?.CONTACT || "site-contact";
+const SOCIAL_KEY = constants.STORAGE_KEYS?.SOCIAL || "site-social";
+const DEFAULT_SOCIAL = constants.DEFAULT_SOCIAL || {
+  spotify: "https://open.spotify.com/user/jakobschlenker?si=03ac03535b8045d7",
+  linkedin: "https://www.linkedin.com/in/jakob-schlenker-88169526b"
+};
+const normalizeUrl = urlUtils.normalizeUrl || ((value) => value || "");
+const isValidUrl = urlUtils.isValidUrl || (() => false);
 
 const themeToggle = document.getElementById("theme-toggle");
 const menuToggle = document.getElementById("menu-toggle");
@@ -44,21 +59,6 @@ if (menuToggle && menuBubble) {
   });
 }
 
-function normalizeUrl(url) {
-  if (!url) return "";
-  if (/^https?:\/\//i.test(url)) return url;
-  return `https://${url}`;
-}
-
-function isValidUrl(url) {
-  try {
-    const parsed = new URL(url);
-    return Boolean(parsed.protocol && parsed.host);
-  } catch (error) {
-    return false;
-  }
-}
-
 function loadContact() {
   try {
     const raw = localStorage.getItem(CONTACT_KEY);
@@ -93,10 +93,7 @@ function loadSocial() {
   try {
     const raw = localStorage.getItem(SOCIAL_KEY);
     if (!raw) {
-      return {
-        spotify: "https://open.spotify.com/user/jakobschlenker?si=03ac03535b8045d7",
-        linkedin: "https://www.linkedin.com/in/jakob-schlenker-88169526b"
-      };
+      return { ...DEFAULT_SOCIAL };
     }
     const parsed = JSON.parse(raw);
     if (!parsed || typeof parsed !== "object") return {};

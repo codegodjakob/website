@@ -1,9 +1,14 @@
 "use strict";
 
 (function initSiteStateSync() {
+  const shared = window.SiteShared || {};
+  const constants = shared.constants || {};
+  const storageUtils = shared.storage || {};
+  const syncCore = shared.syncCore || {};
+
   const ENDPOINT = "/api/site-state";
-  const TOKEN_KEY = "site-admin-sync-token";
-  const STATE_KEYS = [
+  const TOKEN_KEY = constants.STORAGE_KEYS?.ADMIN_TOKEN || "site-admin-sync-token";
+  const STATE_KEYS = constants.STATE_KEYS || [
     "bubble-data",
     "bubble-visibility",
     "bubble-categories",
@@ -13,39 +18,25 @@
     "site-social"
   ];
 
-  function readJson(raw, fallback) {
-    try {
-      return JSON.parse(raw);
-    } catch (error) {
-      return fallback;
-    }
+  if (typeof storageUtils.migrateState === "function") {
+    storageUtils.migrateState(localStorage, constants);
   }
 
   function collectLocalState() {
-    const data = {};
-    STATE_KEYS.forEach((key) => {
-      const raw = localStorage.getItem(key);
-      if (raw == null) return;
-      data[key] = readJson(raw, raw);
-    });
-    return data;
+    if (typeof syncCore.collectState === "function") {
+      return syncCore.collectState(localStorage, STATE_KEYS);
+    }
+    return {};
   }
 
   function applyRemoteState(remoteState) {
-    if (!remoteState || typeof remoteState !== "object") return false;
-    let changed = false;
-
-    STATE_KEYS.forEach((key) => {
-      if (!Object.prototype.hasOwnProperty.call(remoteState, key)) return;
-      const value = remoteState[key];
-      const serialized = typeof value === "string" ? value : JSON.stringify(value, null, 2);
-      const prev = localStorage.getItem(key);
-      if (prev !== serialized) {
-        localStorage.setItem(key, serialized);
-        changed = true;
-      }
-    });
-
+    const changed =
+      typeof syncCore.applyState === "function"
+        ? syncCore.applyState(localStorage, remoteState, STATE_KEYS)
+        : false;
+    if (changed && typeof storageUtils.migrateState === "function") {
+      storageUtils.migrateState(localStorage, constants);
+    }
     return changed;
   }
 

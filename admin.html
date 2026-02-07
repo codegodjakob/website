@@ -4,6 +4,17 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Admin</title>
+    <style>
+      html.admin-locked body {
+        visibility: hidden;
+      }
+      html.admin-ready body {
+        visibility: visible;
+      }
+    </style>
+    <script>
+      document.documentElement.classList.add("admin-locked");
+    </script>
     <link rel="stylesheet" href="admin.css" />
   </head>
   <body>
@@ -160,7 +171,11 @@
       </div>
     </div>
 
+    <script src="shared/constants.js"></script>
+    <script src="shared/url.js"></script>
+    <script src="shared/storage.js"></script>
+    <script src="shared/sync-core.js"></script>
     <script src="state-sync.js"></script>
-    <script src="admin.js"></script>
+    <script src="admin-guard.js"></script>
   </body>
 </html>
