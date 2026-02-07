@@ -143,20 +143,55 @@ function markSaved() {
   }
 }
 
+function normalizedCategoryList() {
+  const value = categoryField.value.trim();
+  if (!value || value.toLowerCase() === "category") return [];
+  return [value];
+}
+
+function ensureBubbleRecord(bubbles) {
+  const id = typeof pageId === "string" ? pageId.trim() : "";
+  if (!id) return -1;
+  const currentIndex = bubbles.findIndex((item) => item?.id === id);
+  if (currentIndex >= 0) return currentIndex;
+
+  bubbles.push({
+    id,
+    title: titleField.value.trim(),
+    url: `page.html?id=${encodeURIComponent(id)}`,
+    image: "",
+    enabled: true,
+    imageOnly: false,
+    categories: normalizedCategoryList()
+  });
+  return bubbles.length - 1;
+}
+
 function commitSave() {
   const bubbles = loadBubbles();
-  const bubbleIndex = bubbles.findIndex((item) => item.id === pageId);
+  const bubbleIndex = ensureBubbleRecord(bubbles);
+  const title = titleField.value.trim();
+  const categoryList = normalizedCategoryList();
   if (bubbleIndex >= 0) {
+    const existing = bubbles[bubbleIndex] || {};
+    const image = typeof existing.image === "string" ? existing.image : "";
     bubbles[bubbleIndex] = {
-      ...bubbles[bubbleIndex],
-      title: titleField.value.trim()
+      ...existing,
+      id: pageId,
+      title,
+      url: `page.html?id=${encodeURIComponent(pageId)}`,
+      image,
+      imageOnly: Boolean(image && !title),
+      enabled: typeof existing.enabled === "undefined" ? true : existing.enabled,
+      categories: categoryList
     };
     saveBubbles(bubbles);
   }
 
   const pages = loadPages();
   pages[pageId] = {
-    category: categoryField.value.trim(),
+    title,
+    category: categoryList[0] || "",
     sections
   };
   savePages(pages);

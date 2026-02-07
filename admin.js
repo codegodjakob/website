@@ -877,6 +877,9 @@ function render() {
     const contentBtn = document.createElement("button");
     contentBtn.textContent = "Inhalt bearbeiten";
     contentBtn.addEventListener("click", () => {
+      if (isDirty) {
+        commitSave();
+      }
       window.open(`page-editor.html?id=${encodeURIComponent(item.id)}`, "_blank");
     });
 
