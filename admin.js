@@ -70,6 +70,24 @@ let socialData = loadSocial();
 let isDirty = false;
 let saveTimer = null;
 
+function defaultItems() {
+  return defaultBubbleData.map((item) => {
+    const id = crypto.randomUUID();
+    return {
+      ...item,
+      id,
+      url: `page.html?id=${id}`,
+      enabled: true,
+      imageOnly: Boolean(item.image && !String(item.title || "").trim()),
+      categories: []
+    };
+  });
+}
+
+function isItemEnabled(item) {
+  return item?.enabled !== false;
+}
+
 function startSort(row, event) {
   dragState = {
     row,
@@ -136,19 +154,10 @@ function loadData() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) {
-      return defaultBubbleData.map((item) => {
-        const id = crypto.randomUUID();
-        return {
-          ...item,
-          id,
-          url: `page.html?id=${id}`,
-          imageOnly: Boolean(item.image && !String(item.title || "").trim()),
-          categories: []
-        };
-      });
+      return defaultItems();
     }
     const parsed = JSON.parse(raw);
-    if (!Array.isArray(parsed)) return [...defaultBubbleData];
+    if (!Array.isArray(parsed)) return defaultItems();
     return parsed.map((item) => {
       const id = item?.id ?? crypto.randomUUID();
       const categories = Array.isArray(item?.categories)
@@ -161,21 +170,13 @@ function loadData() {
         title: item?.title ?? "",
         url: `page.html?id=${id}`,
         image: item?.image ?? "",
+        enabled: item?.enabled !== false,
         imageOnly: Boolean(item?.image && !String(item?.title || "").trim()),
         categories: categories.filter(Boolean)
       };
     });
   } catch (error) {
-    return defaultBubbleData.map((item) => {
-      const id = crypto.randomUUID();
-      return {
-        ...item,
-        id,
-        url: `page.html?id=${id}`,
-        imageOnly: Boolean(item.image && !String(item.title || "").trim()),
-        categories: []
-      };
-    });
+    return defaultItems();
   }
 }
 
@@ -183,9 +184,11 @@ function saveData() {
   items.forEach((item) => {
     if (!item.id) item.id = crypto.randomUUID();
     item.url = `page.html?id=${item.id}`;
+    item.enabled = item.enabled !== false;
   });
   localStorage.setItem(STORAGE_KEY, JSON.stringify(items, null, 2));
-  countText.textContent = `${items.length} Einträge`;
+  const activeCount = items.filter((item) => item.enabled !== false).length;
+  countText.textContent = `${items.length} Einträge (${activeCount} sichtbar)`;
 }
 
 function refreshFromStorage() {
@@ -457,6 +460,7 @@ function render() {
   items.forEach((item, index) => {
     const row = document.createElement("div");
     row.className = "item-row";
+    row.classList.toggle("is-disabled", !isItemEnabled(item));
     row.dataset.index = `${index}`;
     row.dataset.id = item.id;
 
@@ -597,6 +601,24 @@ function render() {
     const actions = document.createElement("div");
     actions.className = "row-actions";
 
+    const visibilityLabel = document.createElement("label");
+    visibilityLabel.className = "visibility-toggle";
+    const visibilityInput = document.createElement("input");
+    visibilityInput.type = "checkbox";
+    visibilityInput.checked = isItemEnabled(item);
+    const visibilityText = document.createElement("span");
+    const updateVisibilityLabel = () => {
+      visibilityText.textContent = visibilityInput.checked ? "Sichtbar" : "Ausgeblendet";
+    };
+    updateVisibilityLabel();
+    visibilityInput.addEventListener("change", () => {
+      items[index].enabled = visibilityInput.checked;
+      row.classList.toggle("is-disabled", !visibilityInput.checked);
+      updateVisibilityLabel();
+      commitSave();
+    });
+    visibilityLabel.append(visibilityInput, visibilityText);
+
     const contentBtn = document.createElement("button");
     contentBtn.textContent = "Inhalt bearbeiten";
     contentBtn.addEventListener("click", () => {
@@ -620,12 +642,13 @@ function render() {
       requestSave();
     });
 
-    actions.append(contentBtn, openPageBtn, deleteBtn);
+    actions.append(visibilityLabel, contentBtn, openPageBtn, deleteBtn);
     row.append(handle, titleInput, tagField, imageField, actions);
     listEl.appendChild(row);
   });
 
-  countText.textContent = `${items.length} Einträge`;
+  const activeCount = items.filter((item) => item.enabled !== false).length;
+  countText.textContent = `${items.length} Einträge (${activeCount} sichtbar)`;
 }
 
 function moveTo(fromIndex, toIndex) {
@@ -638,7 +661,7 @@ function moveTo(fromIndex, toIndex) {
 }
 
 addBtn.addEventListener("click", () => {
-  items.push({ id: crypto.randomUUID(), title: "", url: "", image: "", imageOnly: false, categories: [] });
+  items.push({ id: crypto.randomUUID(), title: "", url: "", image: "", enabled: true, imageOnly: false, categories: [] });
   render();
   requestSave();
 });

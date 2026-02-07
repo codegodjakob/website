@@ -35,9 +35,13 @@ function loadBubbleData() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     lastDataSnapshot = raw || "";
-    if (!raw) return defaultBubbleData;
+    if (!raw) {
+      return defaultBubbleData.map((item) => ({ ...item, enabled: true }));
+    }
     const parsed = JSON.parse(raw);
-    if (!Array.isArray(parsed) || parsed.length === 0) return defaultBubbleData;
+    if (!Array.isArray(parsed) || parsed.length === 0) {
+      return defaultBubbleData.map((item) => ({ ...item, enabled: true }));
+    }
     const cleaned = parsed
       .filter((item) => {
         if (!item) return false;
@@ -51,12 +55,14 @@ function loadBubbleData() {
         const image = typeof item.image === "string" && item.image.trim().length ? item.image.trim() : null;
         const imageOnly = Boolean(image && !title);
         const id = typeof item.id === "string" && item.id.trim().length ? item.id.trim() : crypto.randomUUID();
-        const base = image ? { id, title, url, image } : { id, title, url };
+        const enabled = item?.enabled !== false;
+        const base = image ? { id, title, url, image, enabled } : { id, title, url, enabled };
         return imageOnly ? { ...base, imageOnly: true } : base;
-      });
-    return cleaned.length ? cleaned : defaultBubbleData;
+      })
+      .filter((item) => item.enabled !== false);
+    return cleaned.length ? cleaned : hasCustomData ? [] : defaultBubbleData.map((item) => ({ ...item, enabled: true }));
   } catch (error) {
-    return defaultBubbleData;
+    return defaultBubbleData.map((item) => ({ ...item, enabled: true }));
   }
 }
 
@@ -358,6 +364,11 @@ document.addEventListener("visibilitychange", () => {
   }
 });
 
+// Fallback sync so admin changes apply even when storage events are missed.
+setInterval(() => {
+  refreshBubbleData();
+}, 1200);
+
 function calcBubbleCount(width, height) {
   const area = width * height * 0.62;
   const count = Math.round(area / 210000);
@@ -471,6 +482,9 @@ function getContentKey(item) {
 }
 
 function getNextBubbleData() {
+  if (!bubbleData.length) {
+    return hasCustomData ? null : generateUniqueData();
+  }
   if (bubbleData.length && activeKeys.size >= bubbleData.length) {
     return null;
   }
@@ -494,9 +508,7 @@ function getNextBubbleData() {
     safety -= 1;
   }
 
-  if (!item) {
-    return bubbleData.length ? null : generateUniqueData();
-  }
+  if (!item) return hasCustomData ? null : generateUniqueData();
 
   const nextItem = { ...item };
   if (!nextItem.image && shouldAssignImage()) {

@@ -154,7 +154,8 @@ function loadBubbleList() {
     const raw = localStorage.getItem(DATA_KEY);
     if (!raw) return [];
     const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed : [];
+    if (!Array.isArray(parsed)) return [];
+    return parsed.filter((item) => item && item.enabled !== false);
   } catch (error) {
     return [];
   }

@@ -189,6 +189,11 @@ body.is-sorting {
   opacity: 0.6;
 }
 
+.item-row.is-disabled {
+  opacity: 0.6;
+  border-style: dashed;
+}
+
 .item-row.drag-over {
   outline: 2px dashed rgba(31, 79, 214, 0.35);
   outline-offset: 4px;
@@ -279,6 +284,7 @@ body.is-sorting {
   flex-direction: column;
   gap: 8px;
   flex-wrap: wrap;
+  align-items: flex-start;
 }
 
 .row-actions button {
@@ -293,6 +299,34 @@ body.is-sorting {
 .row-actions button.delete {
   border-color: rgba(200, 40, 40, 0.3);
   color: var(--danger);
+}
+
+.visibility-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 28px;
+  padding: 5px 10px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: #fbfbfa;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.visibility-toggle input {
+  width: 14px;
+  height: 14px;
+  margin: 0;
+  min-height: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  box-shadow: none;
+  outline: none;
+  accent-color: #1f4fd6;
 }
 
 .category-tags {
