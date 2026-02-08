@@ -10,7 +10,7 @@
     const storage = options.storage;
     const storageKey = options.storageKey;
     const enterClass = options.enterClass || "sunset-enter";
-    const enterDuration = Number(options.enterDuration || 12850);
+    const enterDuration = Number(options.enterDuration || 12800);
     let sunsetEnterTimer = null;
 
     function clearEnterTimer() {

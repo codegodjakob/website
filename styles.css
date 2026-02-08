@@ -627,13 +627,21 @@ body[data-theme="sunset"] .bubble.has-image img {
     transform: translate(-50%, -50%) translateY(18vh);
     opacity: 0.24;
   }
-  16% {
+  14% {
     transform: translate(-50%, -50%) translateY(8vh);
     opacity: 0.58;
   }
-  38% {
-    transform: translate(-50%, -50%) translateY(6vh);
-    opacity: 0.7;
+  34% {
+    transform: translate(-50%, -50%) translateY(-6vh);
+    opacity: 0.78;
+  }
+  58% {
+    transform: translate(-50%, -50%) translateY(-29vh);
+    opacity: 1;
+  }
+  82% {
+    transform: translate(-50%, -50%) translateY(-27vh);
+    opacity: 0.98;
   }
   100% {
     transform: translate(-50%, -50%) translateY(-24vh);

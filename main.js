@@ -172,7 +172,7 @@ const themeController =
         storage: localStorage,
         storageKey: THEME_KEY,
         enterClass: "sunset-enter",
-        enterDuration: 12850
+        enterDuration: 12800
       })
     : {
         setTheme(theme) {
