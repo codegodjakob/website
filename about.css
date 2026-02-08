@@ -5,7 +5,7 @@
   --toggle-border: rgba(0, 0, 0, 0.08);
   --edge-offset: 20px;
   --header-height: 44px;
-  --ui-font: "SF Pro Text", "SF Pro Display", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --ui-font: "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
 body[data-theme="dark"] {
