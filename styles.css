@@ -46,12 +46,12 @@ body[data-theme="sunset"] {
   --bg:
     radial-gradient(
       160% 140% at 50% 30%,
-      rgba(255, 252, 248, 0.62) 0%,
-      rgba(255, 236, 230, 0.44) 18%,
-      rgba(245, 212, 205, 0.3) 36%,
-      rgba(196, 200, 224, 0.2) 52%,
-      rgba(118, 154, 210, 0.14) 68%,
-      rgba(14, 34, 64, 0.08) 82%
+      rgba(255, 250, 242, 0.62) 0%,
+      rgba(255, 236, 224, 0.45) 18%,
+      rgba(247, 208, 198, 0.3) 36%,
+      rgba(206, 193, 220, 0.2) 52%,
+      rgba(124, 156, 212, 0.14) 68%,
+      rgba(16, 36, 70, 0.08) 82%
     ),
     linear-gradient(
       0deg,
@@ -59,22 +59,22 @@ body[data-theme="sunset"] {
       #040a13 6%,
       #07101d 12%,
       #0b1828 18%,
-      #14243d 24%,
-      #1f3254 30%,
-      #2f4670 36%,
-      #46608a 42%,
-      #5f79a0 48%,
-      #7b92b5 54%,
-      #9babc4 60%,
-      #c3b0bc 66%,
-      #d7a8a4 72%,
-      #e9a395 78%,
-      #f4ae96 84%,
-      #f9c2a6 90%,
-      #fdddc4 95%,
-      #fff3dd 100%
+      #142643 24%,
+      #20365e 30%,
+      #305082 36%,
+      #4a6ea4 42%,
+      #6789ba 48%,
+      #88a0c9 54%,
+      #adadd0 60%,
+      #c9acc7 66%,
+      #dca7b8 72%,
+      #eea6a3 78%,
+      #f8b29d 84%,
+      #ffc6a8 90%,
+      #ffe1bf 95%,
+      #fff3d9 100%
     );
-  --bg-rgb: 228, 178, 158;
+  --bg-rgb: 230, 180, 162;
   --text: #f2e3d7;
   --glass-bright: rgba(245, 242, 238, 0.92);
   --glass-mid: rgba(231, 226, 220, 0.9);
@@ -167,16 +167,16 @@ body.sunset-enter #sunset-layer::before {
   background:
     linear-gradient(
       0deg,
-      rgba(255, 122, 96, 0.2) 0%,
-      rgba(255, 132, 104, 0.14) 32%,
-      rgba(224, 150, 146, 0.08) 58%,
-      rgba(86, 110, 152, 0.05) 82%,
+      rgba(255, 132, 106, 0.18) 0%,
+      rgba(255, 142, 118, 0.13) 32%,
+      rgba(228, 166, 178, 0.08) 58%,
+      rgba(98, 126, 176, 0.05) 82%,
       rgba(0, 0, 0, 0) 100%
     ),
     radial-gradient(
       circle at 50% 68%,
-      rgba(255, 146, 120, 0.2),
-      rgba(138, 158, 196, 0.1) 56%,
+      rgba(255, 152, 126, 0.18),
+      rgba(144, 166, 210, 0.1) 56%,
       rgba(0, 0, 0, 0) 72%
     );
   opacity: 0.04;
@@ -601,24 +601,28 @@ body[data-theme="sunset"] .bubble.has-image img {
     transform: translate(-50%, -50%) translateY(-38vh);
     opacity: 0.95;
   }
+  10% {
+    transform: translate(-50%, -50%) translateY(-22vh);
+    opacity: 0.9;
+  }
   24% {
-    transform: translate(-50%, -50%) translateY(-8vh);
-    opacity: 0.85;
+    transform: translate(-50%, -50%) translateY(-6vh);
+    opacity: 0.84;
   }
   44% {
-    transform: translate(-50%, -50%) translateY(20vh);
+    transform: translate(-50%, -50%) translateY(18vh);
     opacity: 0.24;
   }
   54% {
-    transform: translate(-50%, -50%) translateY(32vh);
+    transform: translate(-50%, -50%) translateY(30vh);
     opacity: 0;
   }
   72% {
-    transform: translate(-50%, -50%) translateY(32vh);
+    transform: translate(-50%, -50%) translateY(30vh);
     opacity: 0;
   }
   86% {
-    transform: translate(-50%, -50%) translateY(4vh);
+    transform: translate(-50%, -50%) translateY(2vh);
     opacity: 0.46;
   }
   100% {
