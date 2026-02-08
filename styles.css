@@ -65,9 +65,9 @@ body[data-theme="sunset"] {
       #4a6ea4 42%,
       #6789ba 48%,
       #88a0c9 54%,
-      #adadd0 60%,
-      #c9acc7 66%,
-      #dca7b8 72%,
+      #a9b5ce 60%,
+      #c5b9c6 66%,
+      #d8b2b4 72%,
       #eea6a3 78%,
       #f8b29d 84%,
       #ffc6a8 90%,
@@ -636,20 +636,24 @@ body[data-theme="sunset"] .bubble.has-image img {
     transform: translate(-50%, -50%) translateY(18vh);
     opacity: 0.24;
   }
-  14% {
+  12% {
     transform: translate(-50%, -50%) translateY(8vh);
     opacity: 0.58;
   }
-  34% {
-    transform: translate(-50%, -50%) translateY(-18vh);
-    opacity: 0.78;
+  30% {
+    transform: translate(-50%, -50%) translateY(-14vh);
+    opacity: 0.76;
   }
-  58% {
-    transform: translate(-50%, -50%) translateY(-43vh);
-    opacity: 1;
+  56% {
+    transform: translate(-50%, -50%) translateY(-30vh);
+    opacity: 0.9;
   }
   82% {
-    transform: translate(-50%, -50%) translateY(-41vh);
+    transform: translate(-50%, -50%) translateY(-42vh);
+    opacity: 1;
+  }
+  92% {
+    transform: translate(-50%, -50%) translateY(-40vh);
     opacity: 0.98;
   }
   100% {
