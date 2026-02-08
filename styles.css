@@ -150,7 +150,7 @@ body[data-theme="sunset"] #sunset-layer {
     0 0 320px rgba(206, 108, 64, 0.28);
   filter: blur(8px);
   z-index: 2;
-  transform: translate(-50%, -50%) translateY(-24vh);
+  transform: translate(-50%, -50%) translateY(-38vh);
   opacity: 0.95;
   animation: sunsetSun 62s linear infinite;
   will-change: transform, opacity;
@@ -598,31 +598,31 @@ body[data-theme="sunset"] .bubble.has-image img {
 
 @keyframes sunsetSun {
   0% {
-    transform: translate(-50%, -50%) translateY(-24vh);
+    transform: translate(-50%, -50%) translateY(-38vh);
     opacity: 0.95;
   }
   24% {
-    transform: translate(-50%, -50%) translateY(2vh);
+    transform: translate(-50%, -50%) translateY(-8vh);
     opacity: 0.85;
   }
   44% {
-    transform: translate(-50%, -50%) translateY(26vh);
+    transform: translate(-50%, -50%) translateY(20vh);
     opacity: 0.24;
   }
   54% {
-    transform: translate(-50%, -50%) translateY(36vh);
+    transform: translate(-50%, -50%) translateY(32vh);
     opacity: 0;
   }
   72% {
-    transform: translate(-50%, -50%) translateY(36vh);
+    transform: translate(-50%, -50%) translateY(32vh);
     opacity: 0;
   }
   86% {
-    transform: translate(-50%, -50%) translateY(16vh);
+    transform: translate(-50%, -50%) translateY(4vh);
     opacity: 0.46;
   }
   100% {
-    transform: translate(-50%, -50%) translateY(-24vh);
+    transform: translate(-50%, -50%) translateY(-38vh);
     opacity: 0.95;
   }
 }
@@ -637,19 +637,19 @@ body[data-theme="sunset"] .bubble.has-image img {
     opacity: 0.58;
   }
   34% {
-    transform: translate(-50%, -50%) translateY(-6vh);
+    transform: translate(-50%, -50%) translateY(-18vh);
     opacity: 0.78;
   }
   58% {
-    transform: translate(-50%, -50%) translateY(-29vh);
+    transform: translate(-50%, -50%) translateY(-43vh);
     opacity: 1;
   }
   82% {
-    transform: translate(-50%, -50%) translateY(-27vh);
+    transform: translate(-50%, -50%) translateY(-41vh);
     opacity: 0.98;
   }
   100% {
-    transform: translate(-50%, -50%) translateY(-24vh);
+    transform: translate(-50%, -50%) translateY(-38vh);
     opacity: 0.95;
   }
 }
