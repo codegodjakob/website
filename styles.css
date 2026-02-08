@@ -152,7 +152,7 @@ body[data-theme="sunset"] #sunset-layer {
   z-index: 2;
   transform: translate(-50%, -50%) translateY(-24vh);
   opacity: 0.95;
-  animation: sunsetSun 50s linear infinite;
+  animation: sunsetSun 62s linear infinite;
   will-change: transform, opacity;
 }
 
