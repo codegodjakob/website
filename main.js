@@ -170,9 +170,7 @@ const themeController =
     ? sunsetTheme.createThemeController({
         body: document.body,
         storage: localStorage,
-        storageKey: THEME_KEY,
-        enterClass: "sunset-enter",
-        enterDuration: 12800
+        storageKey: THEME_KEY
       })
     : {
         setTheme(theme) {

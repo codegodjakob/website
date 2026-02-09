@@ -43,6 +43,8 @@ body[data-theme="dark"] {
 }
 
 body[data-theme="sunset"] {
+  --sunset-cycle: 76s;
+  --sunset-pulse-cycle: 34s;
   --bg:
     radial-gradient(
       160% 140% at 50% 30%,
@@ -129,7 +131,7 @@ body[data-theme="sunset"] {
   opacity: 0;
   z-index: 1;
   isolation: isolate;
-  transition: opacity 0.6s ease;
+  transition: opacity 0.08s linear;
 }
 
 body[data-theme="sunset"] #sunset-layer {
@@ -157,7 +159,7 @@ body[data-theme="sunset"] #sunset-layer {
 }
 
 body[data-theme="sunset"] #sunset-layer::before {
-  animation: sunsetSun 72s linear infinite;
+  animation: sunsetSun var(--sunset-cycle) linear infinite;
 }
 
 #sunset-layer::after {
@@ -182,7 +184,7 @@ body[data-theme="sunset"] #sunset-layer::before {
   opacity: 0.04;
   mix-blend-mode: soft-light;
   z-index: 3;
-  animation: sunsetPulse 28s ease-in-out infinite;
+  animation: sunsetPulse var(--sunset-pulse-cycle) ease-in-out infinite;
 }
 
 #sunset-layer .sunset-gradient {
@@ -196,7 +198,7 @@ body[data-theme="sunset"] #sunset-layer::before {
 }
 
 body[data-theme="sunset"] #sunset-layer .sunset-gradient {
-  animation: sunsetShift 72s linear infinite;
+  animation: sunsetShift var(--sunset-cycle) linear infinite;
 }
 
 #sunset-layer .sunset-night {
@@ -217,7 +219,7 @@ body[data-theme="sunset"] #sunset-layer .sunset-gradient {
 }
 
 body[data-theme="sunset"] #sunset-layer .sunset-night {
-  animation: nightFall 72s ease-in-out infinite;
+  animation: nightFall var(--sunset-cycle) linear infinite;
 }
 
 #ripple-layer {
@@ -567,15 +569,19 @@ body[data-theme="sunset"] .bubble.has-image img {
 
 @keyframes sunsetShift {
   0% {
-    filter: brightness(0.52) saturate(0.9) hue-rotate(-0.8deg);
+    filter: brightness(0.98) saturate(0.97) hue-rotate(-0.5deg);
     background-position: 52% 34%;
   }
+  4% {
+    filter: brightness(1.08) saturate(0.99) hue-rotate(-0.38deg);
+    background-position: 51% 40%;
+  }
   10% {
-    filter: brightness(0.66) saturate(0.92) hue-rotate(-0.6deg);
+    filter: brightness(1.16) saturate(1.01) hue-rotate(-0.3deg);
     background-position: 51% 42%;
   }
   20% {
-    filter: brightness(0.84) saturate(0.94) hue-rotate(-0.4deg);
+    filter: brightness(1.2) saturate(1.02) hue-rotate(-0.24deg);
     background-position: 50% 54%;
   }
   32% {
@@ -610,20 +616,28 @@ body[data-theme="sunset"] .bubble.has-image img {
 
 @keyframes sunsetSun {
   0% {
-    transform: translate(-50%, -50%) translateY(34vh);
-    opacity: 0;
+    transform: translate(-50%, -50%) translateY(18vh);
+    opacity: 0.76;
+  }
+  1.5% {
+    transform: translate(-50%, -50%) translateY(6vh);
+    opacity: 0.9;
+  }
+  4% {
+    transform: translate(-50%, -50%) translateY(-8vh);
+    opacity: 0.98;
   }
   8% {
-    transform: translate(-50%, -50%) translateY(24vh);
-    opacity: 0.12;
+    transform: translate(-50%, -50%) translateY(-22vh);
+    opacity: 1;
   }
   16% {
-    transform: translate(-50%, -50%) translateY(8vh);
-    opacity: 0.58;
+    transform: translate(-50%, -50%) translateY(-30vh);
+    opacity: 1;
   }
   28% {
-    transform: translate(-50%, -50%) translateY(-18vh);
-    opacity: 0.9;
+    transform: translate(-50%, -50%) translateY(-26vh);
+    opacity: 0.95;
   }
   40% {
     transform: translate(-50%, -50%) translateY(-40vh);
@@ -711,57 +725,60 @@ body[data-theme="sunset"] .bubble.has-image img {
 
 @keyframes sunsetPulse {
   0% {
-    opacity: 0.0022;
-    filter: hue-rotate(-0.04deg) saturate(1);
+    opacity: 0.0018;
+    filter: hue-rotate(-0.03deg) saturate(1);
     transform: translateY(0);
   }
   40% {
-    opacity: 0.0038;
-    filter: hue-rotate(0.05deg) saturate(1.01);
+    opacity: 0.0031;
+    filter: hue-rotate(0.04deg) saturate(1.008);
     transform: translateY(-0.02%);
   }
   72% {
-    opacity: 0.0062;
-    filter: hue-rotate(0.18deg) saturate(1.04);
+    opacity: 0.0042;
+    filter: hue-rotate(0.1deg) saturate(1.02);
     transform: translateY(-0.04%);
   }
   100% {
-    opacity: 0.0022;
-    filter: hue-rotate(-0.04deg) saturate(1);
+    opacity: 0.0018;
+    filter: hue-rotate(-0.03deg) saturate(1);
     transform: translateY(0);
   }
 }
 
 @keyframes nightFall {
   0% {
-    opacity: 0.95;
+    opacity: 0.16;
+  }
+  4% {
+    opacity: 0.12;
   }
   10% {
-    opacity: 0.88;
+    opacity: 0.1;
   }
   20% {
-    opacity: 0.7;
+    opacity: 0.08;
   }
   32% {
-    opacity: 0.46;
+    opacity: 0.06;
   }
   44% {
-    opacity: 0.2;
+    opacity: 0.06;
   }
   56% {
-    opacity: 0.14;
+    opacity: 0.1;
   }
   68% {
-    opacity: 0.3;
+    opacity: 0.24;
   }
   80% {
-    opacity: 0.56;
+    opacity: 0.54;
   }
   90% {
-    opacity: 0.82;
+    opacity: 0.78;
   }
   100% {
-    opacity: 0.95;
+    opacity: 0.82;
   }
 }
 
