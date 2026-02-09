@@ -31,6 +31,7 @@
       <header class="panel-header">
         <div>
           <h1>Admin</h1>
+          <p class="panel-subtitle">Inhalte, Kategorien und Sunset-Atmosphäre zentral steuern.</p>
         </div>
         <div class="status-chips" role="status" aria-live="polite">
           <span id="status-text" class="status-chip">Gespeichert</span>
@@ -38,9 +39,9 @@
           <span id="count-text" class="status-chip">0 Einträge</span>
         </div>
         <div class="panel-actions">
-          <button id="connect-live" type="button">Live verbinden</button>
-          <button id="open-site" type="button">Zur Website</button>
-          <button id="add-btn" type="button">Eintrag hinzufügen</button>
+          <button id="connect-live" class="action-secondary" type="button">Live verbinden</button>
+          <button id="open-site" class="action-secondary" type="button">Zur Website</button>
+          <button id="add-btn" class="action-primary" type="button">Eintrag hinzufügen</button>
         </div>
       </header>
 
@@ -144,6 +145,57 @@
               <span id="linkedin-hint" class="social-hint"></span>
               <button id="check-linkedin" type="button">Link prüfen</button>
             </div>
+          </div>
+        </div>
+      </details>
+
+      <details class="admin-panel sunset-panel">
+        <summary>
+          <div class="panel-summary">
+            <h2>Sunset Tuning</h2>
+            <p>Feintuning für Sonnenaufgang/-untergang: Tempo, Helligkeit und Farbintensität.</p>
+          </div>
+        </summary>
+        <div class="panel-body">
+          <div class="sunset-tuning-grid">
+            <label class="tuning-field">
+              <span>Zyklusdauer</span>
+              <input id="sunset-cycle" type="range" min="40" max="160" step="1" />
+              <strong id="sunset-cycle-value">76 s</strong>
+            </label>
+            <label class="tuning-field">
+              <span>Pulsdauer</span>
+              <input id="sunset-pulse-cycle" type="range" min="16" max="80" step="1" />
+              <strong id="sunset-pulse-cycle-value">34 s</strong>
+            </label>
+            <label class="tuning-field">
+              <span>Helligkeit</span>
+              <input id="sunset-brightness" type="range" min="0.7" max="1.5" step="0.01" />
+              <strong id="sunset-brightness-value">1.00</strong>
+            </label>
+            <label class="tuning-field">
+              <span>Farbstärke</span>
+              <input id="sunset-color" type="range" min="0.7" max="1.8" step="0.01" />
+              <strong id="sunset-color-value">1.00</strong>
+            </label>
+            <label class="tuning-field">
+              <span>Sunrise/Sunset Peak</span>
+              <input id="sunset-peak" type="range" min="0.7" max="1.8" step="0.01" />
+              <strong id="sunset-peak-value">1.00</strong>
+            </label>
+            <label class="tuning-field">
+              <span>Nachtstärke</span>
+              <input id="sunset-night" type="range" min="0.5" max="1.3" step="0.01" />
+              <strong id="sunset-night-value">1.00</strong>
+            </label>
+            <label class="tuning-field">
+              <span>Atmosphäre-Puls</span>
+              <input id="sunset-pulse" type="range" min="0" max="1.8" step="0.01" />
+              <strong id="sunset-pulse-value">1.00</strong>
+            </label>
+          </div>
+          <div class="sunset-actions">
+            <button id="sunset-reset" type="button">Auf Standard zurücksetzen</button>
           </div>
         </div>
       </details>

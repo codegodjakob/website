@@ -44,6 +44,51 @@
     return true;
   }
 
+  function clampNumber(value, min, max, fallback) {
+    const numeric = Number(value);
+    if (!Number.isFinite(numeric)) return fallback;
+    return Math.min(Math.max(numeric, min), max);
+  }
+
+  function normalizeSunsetTuning(raw, defaults = {}) {
+    const source = raw && typeof raw === "object" && !Array.isArray(raw) ? raw : {};
+    const base = defaults && typeof defaults === "object" ? defaults : {};
+    return {
+      cycleSeconds: clampNumber(source.cycleSeconds, 40, 160, clampNumber(base.cycleSeconds, 40, 160, 76)),
+      pulseCycleSeconds: clampNumber(
+        source.pulseCycleSeconds,
+        16,
+        80,
+        clampNumber(base.pulseCycleSeconds, 16, 80, 34)
+      ),
+      brightnessScale: clampNumber(
+        source.brightnessScale,
+        0.7,
+        1.5,
+        clampNumber(base.brightnessScale, 0.7, 1.5, 1)
+      ),
+      colorStrength: clampNumber(
+        source.colorStrength,
+        0.7,
+        1.8,
+        clampNumber(base.colorStrength, 0.7, 1.8, 1)
+      ),
+      peakBoost: clampNumber(source.peakBoost, 0.7, 1.8, clampNumber(base.peakBoost, 0.7, 1.8, 1)),
+      nightStrength: clampNumber(
+        source.nightStrength,
+        0.5,
+        1.3,
+        clampNumber(base.nightStrength, 0.5, 1.3, 1)
+      ),
+      pulseStrength: clampNumber(
+        source.pulseStrength,
+        0,
+        1.8,
+        clampNumber(base.pulseStrength, 0, 1.8, 1)
+      )
+    };
+  }
+
   function normalizeStringList(list) {
     if (!Array.isArray(list)) return [];
     const seen = new Set();
@@ -122,6 +167,7 @@
     const keys = constants.STORAGE_KEYS;
     const currentVersion = Number(constants.CURRENT_STATE_VERSION || 1);
     const defaultSocial = constants.DEFAULT_SOCIAL || {};
+    const defaultSunsetTuning = constants.DEFAULT_SUNSET_TUNING || {};
     const defaultAboutTitle = "Jakob Schlenker";
 
     let changed = false;
@@ -176,6 +222,9 @@
         rawSocial && typeof rawSocial.linkedin === "string" ? rawSocial.linkedin : defaultSocial.linkedin || ""
     };
 
+    const rawSunsetTuning = readJson(storage, keys.SUNSET_TUNING, {});
+    const normalizedSunsetTuning = normalizeSunsetTuning(rawSunsetTuning, defaultSunsetTuning);
+
     if (!jsonEquals(rawBubbles, normalizedBubbles)) {
       writeJson(storage, keys.DATA, normalizedBubbles);
       changed = true;
@@ -204,6 +253,10 @@
       writeJson(storage, keys.SOCIAL, normalizedSocial);
       changed = true;
     }
+    if (!jsonEquals(rawSunsetTuning, normalizedSunsetTuning)) {
+      writeJson(storage, keys.SUNSET_TUNING, normalizedSunsetTuning);
+      changed = true;
+    }
 
     if (normalizedVersion !== currentVersion) {
       writeString(storage, keys.STATE_VERSION, currentVersion);
@@ -225,6 +278,7 @@
     resolveItemCategories,
     normalizeBubbleItem,
     filterVisibleItems,
+    normalizeSunsetTuning,
     migrateState
   };
 });

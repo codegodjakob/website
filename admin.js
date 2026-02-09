@@ -13,12 +13,23 @@ const CATEGORY_KEY = constants.STORAGE_KEYS?.CATEGORIES || "bubble-categories";
 const ABOUT_KEY = constants.STORAGE_KEYS?.ABOUT || "site-about";
 const CONTACT_KEY = constants.STORAGE_KEYS?.CONTACT || "site-contact";
 const SOCIAL_KEY = constants.STORAGE_KEYS?.SOCIAL || "site-social";
+const SUNSET_TUNING_KEY = constants.STORAGE_KEYS?.SUNSET_TUNING || "site-sunset-tuning";
 const DEFAULT_SOCIAL = constants.DEFAULT_SOCIAL || {
   spotify: "https://open.spotify.com/user/jakobschlenker?si=03ac03535b8045d7",
   linkedin: "https://www.linkedin.com/in/jakob-schlenker-88169526b"
 };
+const DEFAULT_SUNSET_TUNING = constants.DEFAULT_SUNSET_TUNING || {
+  cycleSeconds: 76,
+  pulseCycleSeconds: 34,
+  brightnessScale: 1,
+  colorStrength: 1,
+  peakBoost: 1,
+  nightStrength: 1,
+  pulseStrength: 1
+};
 const normalizeUrl = urlUtils.normalizeUrl || ((value) => value || "");
 const isValidUrl = urlUtils.isValidUrl || (() => false);
+const normalizeSunsetTuning = storageUtils.normalizeSunsetTuning || ((value) => value || DEFAULT_SUNSET_TUNING);
 
 const defaultBubbleData = [
   { title: "Die Zukunft der stillen Interfaces", url: "https://example.com/future-interfaces" },
@@ -75,6 +86,21 @@ const checkSpotifyBtn = document.getElementById("check-spotify");
 const checkLinkedinBtn = document.getElementById("check-linkedin");
 const spotifyHint = document.getElementById("spotify-hint");
 const linkedinHint = document.getElementById("linkedin-hint");
+const sunsetCycleInput = document.getElementById("sunset-cycle");
+const sunsetPulseCycleInput = document.getElementById("sunset-pulse-cycle");
+const sunsetBrightnessInput = document.getElementById("sunset-brightness");
+const sunsetColorInput = document.getElementById("sunset-color");
+const sunsetPeakInput = document.getElementById("sunset-peak");
+const sunsetNightInput = document.getElementById("sunset-night");
+const sunsetPulseInput = document.getElementById("sunset-pulse");
+const sunsetCycleValue = document.getElementById("sunset-cycle-value");
+const sunsetPulseCycleValue = document.getElementById("sunset-pulse-cycle-value");
+const sunsetBrightnessValue = document.getElementById("sunset-brightness-value");
+const sunsetColorValue = document.getElementById("sunset-color-value");
+const sunsetPeakValue = document.getElementById("sunset-peak-value");
+const sunsetNightValue = document.getElementById("sunset-night-value");
+const sunsetPulseValue = document.getElementById("sunset-pulse-value");
+const sunsetResetBtn = document.getElementById("sunset-reset");
 const syncHealthState = document.getElementById("sync-health-state");
 const syncHealthPull = document.getElementById("sync-health-pull");
 const syncHealthPush = document.getElementById("sync-health-push");
@@ -90,12 +116,21 @@ let categories = loadCategories();
 let aboutData = loadAbout();
 let contactData = loadContact();
 let socialData = loadSocial();
+let sunsetTuning = loadSunsetTuning();
 let isDirty = false;
 let saveTimer = null;
 let remoteSyncInFlight = false;
 let lastPullAt = null;
 let lastPushAt = null;
-const SYNC_STATE_KEYS = new Set([STORAGE_KEY, VISIBILITY_KEY, CATEGORY_KEY, ABOUT_KEY, CONTACT_KEY, SOCIAL_KEY]);
+const SYNC_STATE_KEYS = new Set([
+  STORAGE_KEY,
+  VISIBILITY_KEY,
+  CATEGORY_KEY,
+  ABOUT_KEY,
+  CONTACT_KEY,
+  SOCIAL_KEY,
+  SUNSET_TUNING_KEY
+]);
 
 function defaultItems() {
   return defaultBubbleData.map((item) => {
@@ -149,6 +184,7 @@ function refreshLocalStateFromStorage() {
   aboutData = loadAbout();
   contactData = loadContact();
   socialData = loadSocial();
+  sunsetTuning = loadSunsetTuning();
 }
 
 function renderAllPanels() {
@@ -157,6 +193,7 @@ function renderAllPanels() {
   renderAbout();
   renderContact();
   renderSocial();
+  renderSunsetTuning();
   updateSocialHint(spotifyInput, spotifyHint);
   updateSocialHint(linkedinInput, linkedinHint);
 }
@@ -431,6 +468,47 @@ function saveSocial() {
   localStorage.setItem(SOCIAL_KEY, JSON.stringify(socialData, null, 2));
 }
 
+function loadSunsetTuning() {
+  try {
+    const raw = localStorage.getItem(SUNSET_TUNING_KEY);
+    if (!raw) return { ...DEFAULT_SUNSET_TUNING };
+    const parsed = JSON.parse(raw);
+    return normalizeSunsetTuning(parsed, DEFAULT_SUNSET_TUNING);
+  } catch (error) {
+    return { ...DEFAULT_SUNSET_TUNING };
+  }
+}
+
+function saveSunsetTuning() {
+  sunsetTuning = normalizeSunsetTuning(sunsetTuning, DEFAULT_SUNSET_TUNING);
+  localStorage.setItem(SUNSET_TUNING_KEY, JSON.stringify(sunsetTuning, null, 2));
+}
+
+function updateTuneValue(el, value, suffix = "") {
+  if (!el) return;
+  el.textContent = `${value}${suffix}`;
+}
+
+function renderSunsetTuning() {
+  sunsetTuning = normalizeSunsetTuning(sunsetTuning, DEFAULT_SUNSET_TUNING);
+
+  if (sunsetCycleInput) sunsetCycleInput.value = String(sunsetTuning.cycleSeconds);
+  if (sunsetPulseCycleInput) sunsetPulseCycleInput.value = String(sunsetTuning.pulseCycleSeconds);
+  if (sunsetBrightnessInput) sunsetBrightnessInput.value = String(sunsetTuning.brightnessScale);
+  if (sunsetColorInput) sunsetColorInput.value = String(sunsetTuning.colorStrength);
+  if (sunsetPeakInput) sunsetPeakInput.value = String(sunsetTuning.peakBoost);
+  if (sunsetNightInput) sunsetNightInput.value = String(sunsetTuning.nightStrength);
+  if (sunsetPulseInput) sunsetPulseInput.value = String(sunsetTuning.pulseStrength);
+
+  updateTuneValue(sunsetCycleValue, sunsetTuning.cycleSeconds, " s");
+  updateTuneValue(sunsetPulseCycleValue, sunsetTuning.pulseCycleSeconds, " s");
+  updateTuneValue(sunsetBrightnessValue, Number(sunsetTuning.brightnessScale).toFixed(2));
+  updateTuneValue(sunsetColorValue, Number(sunsetTuning.colorStrength).toFixed(2));
+  updateTuneValue(sunsetPeakValue, Number(sunsetTuning.peakBoost).toFixed(2));
+  updateTuneValue(sunsetNightValue, Number(sunsetTuning.nightStrength).toFixed(2));
+  updateTuneValue(sunsetPulseValue, Number(sunsetTuning.pulseStrength).toFixed(2));
+}
+
 function setDirty() {
   if (isDirty) return;
   isDirty = true;
@@ -471,6 +549,7 @@ function commitSave() {
   saveAbout();
   saveContact();
   saveSocial();
+  saveSunsetTuning();
   markSaved();
   void pushRemoteState();
 }
@@ -1041,6 +1120,36 @@ if (spotifyInput) {
 if (linkedinInput) {
   linkedinInput.addEventListener("input", (event) => {
     socialData.linkedin = event.target.value.trim();
+    requestSave();
+  });
+}
+
+function bindSunsetRange(inputEl, valueEl, key, format) {
+  if (!inputEl) return;
+  inputEl.addEventListener("input", (event) => {
+    const next = Number(event.target.value);
+    sunsetTuning[key] = next;
+    if (typeof format === "function") {
+      updateTuneValue(valueEl, format(next));
+    } else {
+      updateTuneValue(valueEl, next);
+    }
+    requestSave();
+  });
+}
+
+bindSunsetRange(sunsetCycleInput, sunsetCycleValue, "cycleSeconds", (value) => `${value} s`);
+bindSunsetRange(sunsetPulseCycleInput, sunsetPulseCycleValue, "pulseCycleSeconds", (value) => `${value} s`);
+bindSunsetRange(sunsetBrightnessInput, sunsetBrightnessValue, "brightnessScale", (value) => value.toFixed(2));
+bindSunsetRange(sunsetColorInput, sunsetColorValue, "colorStrength", (value) => value.toFixed(2));
+bindSunsetRange(sunsetPeakInput, sunsetPeakValue, "peakBoost", (value) => value.toFixed(2));
+bindSunsetRange(sunsetNightInput, sunsetNightValue, "nightStrength", (value) => value.toFixed(2));
+bindSunsetRange(sunsetPulseInput, sunsetPulseValue, "pulseStrength", (value) => value.toFixed(2));
+
+if (sunsetResetBtn) {
+  sunsetResetBtn.addEventListener("click", () => {
+    sunsetTuning = { ...DEFAULT_SUNSET_TUNING };
+    renderSunsetTuning();
     requestSave();
   });
 }

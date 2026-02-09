@@ -14,15 +14,26 @@ const STORAGE_KEY = constants.STORAGE_KEYS?.DATA || "bubble-data";
 const VISIBILITY_KEY = constants.STORAGE_KEYS?.VISIBILITY || "bubble-visibility";
 const CONTACT_KEY = constants.STORAGE_KEYS?.CONTACT || "site-contact";
 const SOCIAL_KEY = constants.STORAGE_KEYS?.SOCIAL || "site-social";
+const SUNSET_TUNING_KEY = constants.STORAGE_KEYS?.SUNSET_TUNING || "site-sunset-tuning";
 const THEME_KEY = constants.STORAGE_KEYS?.THEME || "bubble-theme";
 const THEMES = constants.THEMES?.MAIN || ["light", "dark", "sunset"];
 const DEFAULT_SOCIAL = constants.DEFAULT_SOCIAL || {
   spotify: "https://open.spotify.com/user/jakobschlenker?si=03ac03535b8045d7",
   linkedin: "https://www.linkedin.com/in/jakob-schlenker-88169526b"
 };
+const DEFAULT_SUNSET_TUNING = constants.DEFAULT_SUNSET_TUNING || {
+  cycleSeconds: 76,
+  pulseCycleSeconds: 34,
+  brightnessScale: 1,
+  colorStrength: 1,
+  peakBoost: 1,
+  nightStrength: 1,
+  pulseStrength: 1
+};
 const normalizeUrl = urlUtils.normalizeUrl || ((value) => value || "");
 const isValidUrl = urlUtils.isValidUrl || (() => false);
 const coerceEnabled = storageUtils.coerceEnabled || ((value) => value !== false);
+const normalizeSunsetTuning = storageUtils.normalizeSunsetTuning || ((value) => value || DEFAULT_SUNSET_TUNING);
 
 const sampleImages = [
   "https://images.unsplash.com/photo-1737276746228-218b6f8a0efc?auto=format&fit=crop&fm=jpg&ixlib=rb-4.1.0&q=80&w=1600",
@@ -105,6 +116,7 @@ function loadBubbleData() {
 
 let lastDataSnapshot = "";
 let lastVisibilitySnapshot = "";
+let lastSunsetTuningSnapshot = "";
 let bubbleData = loadBubbleData();
 
 const activeTitles = new Set();
@@ -182,6 +194,42 @@ const themeController =
 function setTheme(theme) {
   themeController.setTheme(theme);
 }
+
+function loadSunsetTuning() {
+  try {
+    const raw = localStorage.getItem(SUNSET_TUNING_KEY);
+    lastSunsetTuningSnapshot = raw || "";
+    if (!raw) return { ...DEFAULT_SUNSET_TUNING };
+    return normalizeSunsetTuning(JSON.parse(raw), DEFAULT_SUNSET_TUNING);
+  } catch (error) {
+    return { ...DEFAULT_SUNSET_TUNING };
+  }
+}
+
+function applySunsetTuning(tuningInput) {
+  const tuning = normalizeSunsetTuning(tuningInput, DEFAULT_SUNSET_TUNING);
+  const root = document.documentElement;
+  root.style.setProperty("--sunset-cycle", `${tuning.cycleSeconds}s`);
+  root.style.setProperty("--sunset-pulse-cycle", `${tuning.pulseCycleSeconds}s`);
+  root.style.setProperty("--sunset-brightness-scale", String(tuning.brightnessScale));
+  root.style.setProperty("--sunset-color-strength", String(tuning.colorStrength));
+  root.style.setProperty("--sunset-peak-boost", String(tuning.peakBoost));
+  root.style.setProperty("--sunset-night-strength", String(tuning.nightStrength));
+  root.style.setProperty("--sunset-pulse-strength", String(tuning.pulseStrength));
+}
+
+function refreshSunsetTuning() {
+  try {
+    const raw = localStorage.getItem(SUNSET_TUNING_KEY) || "";
+    if (raw === lastSunsetTuningSnapshot) return;
+    lastSunsetTuningSnapshot = raw;
+  } catch (error) {
+    return;
+  }
+  applySunsetTuning(loadSunsetTuning());
+}
+
+applySunsetTuning(loadSunsetTuning());
 
 setTheme(initialTheme);
 
@@ -356,6 +404,9 @@ window.addEventListener("storage", (event) => {
   if (event.key === STORAGE_KEY || event.key === VISIBILITY_KEY) {
     refreshBubbleData();
   }
+  if (event.key === SUNSET_TUNING_KEY) {
+    refreshSunsetTuning();
+  }
   if (event.key === SOCIAL_KEY) {
     applySocialLinks();
   }
@@ -367,12 +418,14 @@ window.addEventListener("storage", (event) => {
 document.addEventListener("visibilitychange", () => {
   if (document.visibilityState === "visible") {
     refreshBubbleData();
+    refreshSunsetTuning();
   }
 });
 
 // Fallback sync so admin changes apply even when storage events are missed.
 setInterval(() => {
   refreshBubbleData();
+  refreshSunsetTuning();
 }, 1200);
 
 function calcBubbleCount(width, height) {

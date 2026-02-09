@@ -14,6 +14,7 @@
     ABOUT: "site-about",
     CONTACT: "site-contact",
     SOCIAL: "site-social",
+    SUNSET_TUNING: "site-sunset-tuning",
     THEME: "bubble-theme",
     ADMIN_TOKEN: "site-admin-sync-token",
     STATE_VERSION: "site-state-version",
@@ -27,7 +28,8 @@
     STORAGE_KEYS.PAGES,
     STORAGE_KEYS.ABOUT,
     STORAGE_KEYS.CONTACT,
-    STORAGE_KEYS.SOCIAL
+    STORAGE_KEYS.SOCIAL,
+    STORAGE_KEYS.SUNSET_TUNING
   ]);
 
   const THEMES = Object.freeze({
@@ -40,11 +42,22 @@
     linkedin: "https://www.linkedin.com/in/jakob-schlenker-88169526b"
   });
 
+  const DEFAULT_SUNSET_TUNING = Object.freeze({
+    cycleSeconds: 76,
+    pulseCycleSeconds: 34,
+    brightnessScale: 1,
+    colorStrength: 1,
+    peakBoost: 1,
+    nightStrength: 1,
+    pulseStrength: 1
+  });
+
   return Object.freeze({
-    CURRENT_STATE_VERSION: 2,
+    CURRENT_STATE_VERSION: 3,
     STORAGE_KEYS,
     STATE_KEYS,
     THEMES,
-    DEFAULT_SOCIAL
+    DEFAULT_SOCIAL,
+    DEFAULT_SUNSET_TUNING
   });
 });

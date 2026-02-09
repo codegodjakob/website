@@ -54,5 +54,29 @@ describe("shared/storage", () => {
     expect(Array.isArray(migratedItems)).toBe(true);
     expect(migratedItems[0].categories).toEqual(["Work"]);
     expect(migratedItems[0].url).toMatch(/^page\.html\?id=/);
+    expect(JSON.parse(memoryStorage.getItem(keys.SUNSET_TUNING)).cycleSeconds).toBeGreaterThan(0);
+  });
+
+  it("normalizes sunset tuning config with sane limits", () => {
+    const normalized = storageUtils.normalizeSunsetTuning(
+      {
+        cycleSeconds: 999,
+        pulseCycleSeconds: -5,
+        brightnessScale: "not-a-number",
+        colorStrength: 5,
+        peakBoost: 0.2,
+        nightStrength: 2,
+        pulseStrength: -1
+      },
+      constants.DEFAULT_SUNSET_TUNING
+    );
+
+    expect(normalized.cycleSeconds).toBe(160);
+    expect(normalized.pulseCycleSeconds).toBe(16);
+    expect(normalized.brightnessScale).toBe(constants.DEFAULT_SUNSET_TUNING.brightnessScale);
+    expect(normalized.colorStrength).toBe(1.8);
+    expect(normalized.peakBoost).toBe(0.7);
+    expect(normalized.nightStrength).toBe(1.3);
+    expect(normalized.pulseStrength).toBe(0);
   });
 });
