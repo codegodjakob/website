@@ -50,6 +50,8 @@ body[data-theme="sunset"] {
   --sunset-peak-boost: 1;
   --sunset-night-strength: 1;
   --sunset-pulse-strength: 1;
+  --sunset-warmth: 1;
+  --sunset-cool: 0.55;
   --bg:
     radial-gradient(
       160% 140% at 50% 30%,
@@ -576,67 +578,71 @@ body[data-theme="sunset"] .bubble.has-image img {
   0% {
     filter: brightness(calc(0.54 * var(--sunset-brightness-scale)))
       saturate(calc(0.9 * var(--sunset-color-strength)))
-      hue-rotate(calc(-0.82deg * var(--sunset-color-strength)));
+      hue-rotate(calc(-0.2deg * var(--sunset-color-strength) * var(--sunset-cool)));
     background-position: 52% 33%;
   }
   10% {
     filter: brightness(calc(0.86 * var(--sunset-brightness-scale)))
-      saturate(calc(0.97 * var(--sunset-color-strength)))
-      hue-rotate(calc(-0.35deg * var(--sunset-color-strength)));
+      saturate(calc(0.98 * var(--sunset-color-strength)))
+      hue-rotate(calc(-0.1deg * var(--sunset-color-strength) * var(--sunset-cool)));
     background-position: 51% 45%;
   }
   20% {
     filter: brightness(calc(1.14 * var(--sunset-brightness-scale)))
-      saturate(calc(1.12 * var(--sunset-color-strength) * var(--sunset-peak-boost)))
-      hue-rotate(calc(0.22deg * var(--sunset-color-strength) * var(--sunset-peak-boost)));
+      saturate(calc(1.18 * var(--sunset-color-strength) * var(--sunset-peak-boost)))
+      hue-rotate(
+        calc(0.55deg * var(--sunset-color-strength) * var(--sunset-peak-boost) * var(--sunset-warmth))
+      );
     background-position: 50% 58%;
   }
   30% {
     filter: brightness(calc(1.2 * var(--sunset-brightness-scale)))
-      saturate(calc(1.04 * var(--sunset-color-strength)))
-      hue-rotate(calc(0.06deg * var(--sunset-color-strength)));
+      saturate(calc(1.06 * var(--sunset-color-strength)))
+      hue-rotate(calc(0.24deg * var(--sunset-color-strength) * var(--sunset-warmth)));
     background-position: 49% 68%;
   }
   40% {
     filter: brightness(calc(1.24 * var(--sunset-brightness-scale)))
-      saturate(calc(1.02 * var(--sunset-color-strength)))
-      hue-rotate(calc(-0.06deg * var(--sunset-color-strength)));
+      saturate(calc(1.03 * var(--sunset-color-strength)))
+      hue-rotate(calc(0.08deg * var(--sunset-color-strength) * var(--sunset-warmth)));
     background-position: 48% 76%;
   }
   50% {
     filter: brightness(calc(1.26 * var(--sunset-brightness-scale)))
       saturate(calc(0.99 * var(--sunset-color-strength)))
-      hue-rotate(calc(-0.14deg * var(--sunset-color-strength)));
+      hue-rotate(calc(-0.02deg * var(--sunset-color-strength) * var(--sunset-cool)));
     background-position: 48% 79%;
   }
   60% {
     filter: brightness(calc(1.18 * var(--sunset-brightness-scale)))
-      saturate(calc(1.02 * var(--sunset-color-strength)))
-      hue-rotate(calc(-0.04deg * var(--sunset-color-strength)));
+      saturate(calc(1.04 * var(--sunset-color-strength)))
+      hue-rotate(calc(0.12deg * var(--sunset-color-strength) * var(--sunset-warmth)));
     background-position: 49% 70%;
   }
   70% {
     filter: brightness(calc(1.04 * var(--sunset-brightness-scale)))
-      saturate(calc(1.08 * var(--sunset-color-strength)))
-      hue-rotate(calc(0.14deg * var(--sunset-color-strength)));
+      saturate(calc(1.12 * var(--sunset-color-strength)))
+      hue-rotate(calc(0.32deg * var(--sunset-color-strength) * var(--sunset-warmth)));
     background-position: 50% 58%;
   }
   80% {
     filter: brightness(calc(0.84 * var(--sunset-brightness-scale)))
-      saturate(calc(1.18 * var(--sunset-color-strength) * var(--sunset-peak-boost)))
-      hue-rotate(calc(0.38deg * var(--sunset-color-strength) * var(--sunset-peak-boost)));
+      saturate(calc(1.22 * var(--sunset-color-strength) * var(--sunset-peak-boost)))
+      hue-rotate(
+        calc(0.6deg * var(--sunset-color-strength) * var(--sunset-peak-boost) * var(--sunset-warmth))
+      );
     background-position: 51% 46%;
   }
   90% {
     filter: brightness(calc(0.62 * var(--sunset-brightness-scale)))
-      saturate(calc(0.98 * var(--sunset-color-strength)))
-      hue-rotate(calc(-0.1deg * var(--sunset-color-strength)));
+      saturate(calc(1 * var(--sunset-color-strength)))
+      hue-rotate(calc(0.12deg * var(--sunset-color-strength) * var(--sunset-warmth)));
     background-position: 53% 38%;
   }
   100% {
     filter: brightness(calc(0.54 * var(--sunset-brightness-scale)))
       saturate(calc(0.9 * var(--sunset-color-strength)))
-      hue-rotate(calc(-0.82deg * var(--sunset-color-strength)));
+      hue-rotate(calc(-0.2deg * var(--sunset-color-strength) * var(--sunset-cool)));
     background-position: 52% 33%;
   }
 }
@@ -745,7 +751,7 @@ body[data-theme="sunset"] .bubble.has-image img {
 @keyframes sunsetPulse {
   0% {
     opacity: calc(0.002 * var(--sunset-pulse-strength));
-    filter: hue-rotate(calc(-0.08deg * var(--sunset-color-strength)))
+    filter: hue-rotate(calc(-0.04deg * var(--sunset-color-strength) * var(--sunset-cool)))
       saturate(calc(1 * var(--sunset-color-strength)));
     transform: translateY(0);
   }
@@ -756,8 +762,10 @@ body[data-theme="sunset"] .bubble.has-image img {
   }
   20% {
     opacity: calc(0.0105 * var(--sunset-pulse-strength) * var(--sunset-peak-boost));
-    filter: hue-rotate(calc(0.22deg * var(--sunset-color-strength) * var(--sunset-peak-boost)))
-      saturate(calc(1.06 * var(--sunset-color-strength) * var(--sunset-peak-boost)));
+    filter: hue-rotate(
+        calc(0.48deg * var(--sunset-color-strength) * var(--sunset-peak-boost) * var(--sunset-warmth))
+      )
+      saturate(calc(1.08 * var(--sunset-color-strength) * var(--sunset-peak-boost)));
     transform: translateY(-0.04%);
   }
   30% {
@@ -780,8 +788,10 @@ body[data-theme="sunset"] .bubble.has-image img {
   }
   80% {
     opacity: calc(0.011 * var(--sunset-pulse-strength) * var(--sunset-peak-boost));
-    filter: hue-rotate(calc(0.24deg * var(--sunset-color-strength) * var(--sunset-peak-boost)))
-      saturate(calc(1.07 * var(--sunset-color-strength) * var(--sunset-peak-boost)));
+    filter: hue-rotate(
+        calc(0.52deg * var(--sunset-color-strength) * var(--sunset-peak-boost) * var(--sunset-warmth))
+      )
+      saturate(calc(1.1 * var(--sunset-color-strength) * var(--sunset-peak-boost)));
     transform: translateY(-0.04%);
   }
   90% {
