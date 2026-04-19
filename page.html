@@ -1,66 +1,208 @@
 <!doctype html>
-<html lang="de">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Jakob Schlenker</title>
-    <link rel="icon" href="/favicon-circle.ico?v=8" sizes="any" />
-    <link rel="shortcut icon" href="/favicon-circle.ico?v=8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon-circle.svg?v=8" />
-    <link rel="icon" type="image/png" href="/favicon-circle-16x16.png?v=8" sizes="16x16" />
-    <link rel="icon" type="image/png" href="/favicon-circle-32x32.png?v=8" sizes="32x32" />
-    <link rel="apple-touch-icon" href="/apple-touch-icon-circle.png?v=8" />
-    <link rel="apple-touch-icon-precomposed" href="/apple-touch-icon-circle.png?v=8" />
-    <link rel="mask-icon" href="/safari-pinned-tab-circle.svg?v=8" color="#000000" />
-    <link rel="manifest" href="/site.webmanifest?v=8" />
-    <link rel="stylesheet" href="page.css" />
-  </head>
-  <body data-theme="light" class="page-loading">
-    <header class="top-bar">
-      <div class="top-left">
-        <button id="menu-toggle" type="button" aria-expanded="false" aria-controls="menu">Jakob Schlenker</button>
-        <div id="menu" class="menu-bubble" role="menu">
-          <a href="about.html" role="menuitem">About</a>
-          <a href="#" role="menuitem" data-email>Email</a>
-          <a href="#" role="menuitem" data-social="spotify" target="_blank" rel="noreferrer">Spotify</a>
-          <a href="#" role="menuitem" data-social="linkedin" target="_blank" rel="noreferrer">LinkedIn</a>
-        </div>
-      </div>
-      <div class="top-right">
-        <a id="back-button" class="pill-button" href="index.html">Back</a>
-        <button id="theme-toggle" type="button" aria-label="Theme umschalten">
-          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <circle cx="12" cy="12" r="4.5" />
-            <path d="M12 2v2.5M12 19.5V22M4.5 12H2M22 12h-2.5M5.4 5.4l1.8 1.8M16.8 16.8l1.8 1.8M18.6 5.4l-1.8 1.8M7.2 16.8l-1.8 1.8" />
-          </svg>
-          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="M21 14.5A9 9 0 0 1 9.5 3a7.5 7.5 0 1 0 11.5 11.5Z" />
-          </svg>
-        </button>
-      </div>
-    </header>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Jakob Schlenker — Under Construction</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="/favicon-circle.ico?v=8" sizes="any" />
+<link rel="shortcut icon" href="/favicon-circle.ico?v=8" />
+<link rel="icon" type="image/svg+xml" href="/favicon-circle.svg?v=8" />
+<link rel="icon" type="image/png" href="/favicon-circle-16x16.png?v=8" sizes="16x16" />
+<link rel="icon" type="image/png" href="/favicon-circle-32x32.png?v=8" sizes="32x32" />
+<link rel="apple-touch-icon" href="/apple-touch-icon-circle.png?v=8" />
+<link rel="mask-icon" href="/safari-pinned-tab-circle.svg?v=8" color="#000000" />
+<link rel="manifest" href="/site.webmanifest?v=8" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Geist+Mono:wght@100..900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #fafaf9;
+    --ink: #09090b;
+    --muted: #71717a;
+    --rule: #27272a;
+    --accent: #166534;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #09090b; --ink: #fafaf9; --muted: #a1a1aa; --rule: #d4d4d8; --accent: #4ade80; }
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Geist", ui-sans-serif, system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  body {
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 40px;
+    padding: 48px 24px;
+  }
+  .stack {
+    width: 100%;
+    max-width: 560px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 28px;
+  }
+  .label {
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-weight: 500;
+    color: var(--ink);
+  }
+  .rule {
+    width: 24px;
+    height: 1px;
+    background: var(--rule);
+    opacity: 0.3;
+  }
+  h1 {
+    margin: 0;
+    font-size: clamp(24px, 3.4vw, 34px);
+    font-weight: 400;
+    letter-spacing: -0.01em;
+    line-height: 1.25;
+    text-wrap: balance;
+  }
+  .contact {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.55;
+    max-width: 44ch;
+  }
+  .contact a {
+    color: var(--ink);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-thickness: 1px;
+    transition: color 0.15s;
+  }
+  .contact a:hover { color: var(--accent); }
 
-    <main class="page">
-      <div id="meta-categories" class="meta meta-top"></div>
-      <section class="hero">
-        <img id="hero-image" src="" alt="" />
-      </section>
+  canvas#waves {
+    display: block;
+    width: min(440px, 78vw);
+    height: min(440px, 78vw);
+    background: transparent;
+  }
+</style>
+</head>
+<body>
 
-      <section class="intro">
-        <h1 id="page-title"></h1>
-      </section>
+  <div class="stack">
+    <canvas id="waves" aria-hidden="true"></canvas>
+    <h1>The site is getting redesigned.<br>Come back soon.</h1>
+    <p class="contact">
+      Please feel free to reach out<br>
+      <a href="mailto:jakob.schlenker@gmail.com">jakob.schlenker@gmail.com</a>
+    </p>
+  </div>
 
-      <section id="page-content" class="content"></section>
-      <section class="related" id="related-section">
-        <div id="related-list" class="related-list"></div>
-      </section>
-    </main>
+<script>
+// Contour-wave meditation — sparse spiral sources, slow drift.
+(() => {
+  const canvas = document.getElementById('waves');
+  const ctx = canvas.getContext('2d', { alpha: true });
+  const DPR = Math.min(window.devicePixelRatio || 1, 2);
+  const SIZE = 550;
+  canvas.width = SIZE * DPR;
+  canvas.height = SIZE * DPR;
+  ctx.scale(DPR, DPR);
 
-    <script src="shared/constants.js"></script>
-    <script src="shared/url.js"></script>
-    <script src="shared/storage.js"></script>
-    <script src="shared/sync-core.js"></script>
-    <script src="state-sync.js"></script>
-    <script src="page.js"></script>
-  </body>
+  const width = SIZE, height = SIZE;
+  const resolution = 4;
+  const rows = Math.floor(height / resolution);
+  const cols = Math.floor(width / resolution);
+
+  const inkColor = getComputedStyle(document.documentElement).getPropertyValue('--ink').trim() || '#09090b';
+
+  const sources = [];
+  const pointsPerSpiral = 5;
+  for (let i = 0; i < pointsPerSpiral; i++) {
+    const t = i / pointsPerSpiral;
+    const angle = t * 2 * Math.PI * 1.5;
+    const radius = 100 + t * 150;
+    sources.push({
+      x: width/2 + Math.cos(angle) * radius,
+      y: height/2 + Math.sin(angle) * radius,
+      wavelength: 60 + t * 30,
+      phase: angle,
+      amplitude: 1.0
+    });
+  }
+  sources.push({ x: width/2, y: height/2, wavelength: 80, phase: 0, amplitude: 1.5 });
+
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const field = new Float32Array(rows * cols);
+  const targetFPS = 20;
+  const frameInterval = 1000 / targetFPS;
+  let time = 0, lastFrameTime = 0;
+
+  function render() {
+    ctx.clearRect(0, 0, width, height);
+
+    for (let i = 0; i < rows; i++) {
+      for (let j = 0; j < cols; j++) {
+        const x = j * resolution, y = i * resolution;
+        let amp = 0;
+        for (let s = 0; s < sources.length; s++) {
+          const src = sources[s];
+          const dx = x - src.x, dy = y - src.y;
+          const d = Math.sqrt(dx*dx + dy*dy);
+          const falloff = Math.exp(-d / 250);
+          amp += src.amplitude * falloff * Math.sin((d / src.wavelength - time) * 2 * Math.PI + src.phase);
+        }
+        field[i * cols + j] = amp;
+      }
+    }
+
+    ctx.strokeStyle = inkColor;
+    ctx.lineWidth = 1.1;
+    ctx.beginPath();
+
+    const levels = [-0.2, 0.2];
+    for (const level of levels) {
+      for (let i = 0; i < rows - 1; i++) {
+        for (let j = 0; j < cols - 1; j++) {
+          const idx = i * cols + j;
+          const x = j * resolution, y = i * resolution;
+          const v00 = field[idx] > level;
+          const v10 = field[idx + 1] > level;
+          const v11 = field[idx + cols + 1] > level;
+          const v01 = field[idx + cols] > level;
+          if (v00 !== v10) { ctx.moveTo(x + resolution/2, y); ctx.lineTo(x + resolution, y + resolution/2); }
+          if (v10 !== v11) { ctx.moveTo(x + resolution, y + resolution/2); ctx.lineTo(x + resolution/2, y + resolution); }
+          if (v11 !== v01) { ctx.moveTo(x + resolution/2, y + resolution); ctx.lineTo(x, y + resolution/2); }
+          if (v01 !== v00) { ctx.moveTo(x, y + resolution/2); ctx.lineTo(x + resolution/2, y); }
+        }
+      }
+    }
+    ctx.stroke();
+  }
+
+  function tick(now) {
+    if (!lastFrameTime) lastFrameTime = now;
+    if (now - lastFrameTime >= frameInterval) {
+      lastFrameTime = now - ((now - lastFrameTime) % frameInterval);
+      render();
+      if (!reduced) time += 0.00075;
+    }
+    requestAnimationFrame(tick);
+  }
+  render();
+  requestAnimationFrame(tick);
+})();
+</script>
+</body>
 </html>
